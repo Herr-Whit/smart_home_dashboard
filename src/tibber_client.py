@@ -8,6 +8,7 @@ from src.models.tibber_models import TibberData
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 
+
 class TibberClient:
     TIBBER_API_URL = "https://api.tibber.com/v1-beta/gql"
     TIBBER_API_TOKEN = os.environ["TIBBER_API_TOKEN"]
@@ -61,5 +62,3 @@ class TibberClient:
 
         data = result["viewer"]["homes"][0]["currentSubscription"]["priceInfo"]
         return data
-
-
