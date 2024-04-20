@@ -56,7 +56,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
         )
 
         # Save the plot as an image
-        img_dir = os.path.join(os.getcwd(), os.path.join("src", "server","img"))
+        img_dir = os.path.join(os.getcwd(), "img")
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
         img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
