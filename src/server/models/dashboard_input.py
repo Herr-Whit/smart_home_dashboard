@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from src.models.tibber_models import TibberData
+from src.server.models.tibber_models import TibberData
 
 
 class DashboardInput(BaseModel):

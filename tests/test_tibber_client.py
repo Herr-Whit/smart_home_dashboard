@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.tibber_client import TibberClient
+from src.server.tibber_client import TibberClient
 
 
 class TestTibberClient(TestCase):

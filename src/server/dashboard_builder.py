@@ -1,11 +1,9 @@
 import os.path
 from abc import abstractmethod, ABC
-from pathlib import Path
 
 import pandas as pd
 import seaborn as sns
-from src.models.dashboard_input import DashboardInput
-from src.models.tibber_models import TibberData
+from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
 
@@ -27,7 +25,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
         df["Preis in ct"] = df["total"] * 100
         return df
 
-    def build_dashboard(self, data: dict) -> None:
+    def build_dashboard(self, data: dict) -> str:
         print("Building simple dashboard")
         print(data["tibber_data"])
         tibber_df = self.wrangle_tibber_data(data["tibber_data"])
@@ -39,7 +37,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
         # We want to 'Zeit' as the x axis, but 'hour' as the label in jumps of 4 hours
 
         tibber_plot = sns.barplot(data=tibber_df, x="Zeit", y="Preis in ct")
-        tibber_plot.set(xlabel="Time", ylabel="Price in ct")
+        tibber_plot.set(xlabel="Zeit (Stunde)", ylabel="Price in ct")
         tibber_plot.set_xticklabels(
             [
                 str(x) if i % 4 == 0 else ""
@@ -56,11 +54,12 @@ class SimpleDashboardBuilder(DashboardBuilder):
         tibber_plot.axhline(
             tibber_df["tax"].mean() * 100, ls="--", color="r", label="Kostenlos"
         )
-        tibber_plot.get_figure().show()
 
         # Save the plot as an image
-        img_dir = os.path.join(os.getcwd(), "img")
+        img_dir = os.path.join(os.getcwd(), os.path.join("src", "server","img"))
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
         img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
-        tibber_plot.get_figure().savefig(os.path.join(img_dir, img_name))
+        img_path = os.path.join(img_dir, img_name)
+        tibber_plot.get_figure().savefig(img_path)
+        return img_path

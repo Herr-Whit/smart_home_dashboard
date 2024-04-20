@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from src.dashboard_builder import SimpleDashboardBuilder
-from src.models.dashboard_input import DashboardInput
+from src.server.dashboard_builder import SimpleDashboardBuilder
 
 
 class TestSimpleDashboardBuilder(TestCase):
