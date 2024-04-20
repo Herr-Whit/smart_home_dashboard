@@ -54,6 +54,9 @@ class TibberClient:
         """
         )
 
-        return self.client.execute(query)
+        result = self.client.execute(query)
+
+        data = result["viewer"]["homes"][0]["currentSubscription"]["priceInfo"]
+        return data
 
 
