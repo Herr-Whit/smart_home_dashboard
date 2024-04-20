@@ -3,6 +3,9 @@ import os
 import dotenv
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
+
+from src.models.tibber_models import TibberData
+
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 class TibberClient:
@@ -19,7 +22,7 @@ class TibberClient:
         # Create a GraphQL client using the defined transport
         self.client = Client(transport=transport, fetch_schema_from_transport=True)
 
-    def get_price(self):
+    def get_price(self) -> TibberData:
         query = gql(
             """
             {
