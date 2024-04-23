@@ -59,7 +59,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
         img_dir = os.path.join(os.getcwd(), "img")
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
-        img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
+        img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.bmp"
         img_path = os.path.join(img_dir, img_name)
-        tibber_plot.get_figure().savefig(img_path)
+        tibber_plot.get_figure().savefig(img_path, format='bmp')
         return img_path
