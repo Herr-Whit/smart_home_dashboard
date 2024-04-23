@@ -12,12 +12,12 @@ import network
 import urequests as requests
 
 
-def download_latest_png():
+def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
 
     response = requests.get(f"http://{DASHBOARD_URL}:8000/dashboard/")
     if response.status_code == 200:
-        file_name = f"dashboard.png"
+        file_name = f"dashboard.bmp"
         # file_path = os.path.join("sd", file_name)
         file_path = file_name
         with open(file_name, "wb") as f:
@@ -63,7 +63,7 @@ def main():
 
     connect_to_wifi()
     # The URL of the dashboard server
-    file_path = download_latest_png()
+    file_path = download_latest_dashboard_image()
 
     print("file_path:", file_path)
     if file_path:
