@@ -3,6 +3,8 @@ from abc import abstractmethod, ABC
 
 import pandas as pd
 import seaborn as sns
+
+from src.server.helpers import png_to_bmp
 from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
@@ -63,5 +65,5 @@ class SimpleDashboardBuilder(DashboardBuilder):
         img_path = os.path.join(img_dir, img_name)
         tibber_plot.get_figure().savefig(img_path, format="png")
         # convert the png file to bmp
-
-        return img_path
+        bmp_path = png_to_bmp(img_path, img_path.replace(".png", ".bmp"))
+        return bmp_path
