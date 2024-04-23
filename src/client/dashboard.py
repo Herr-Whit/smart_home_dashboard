@@ -2,7 +2,7 @@
 import json
 import os
 import time
-from src.client.inkplate10 import Inkplate
+from inkplate10 import Inkplate
 
 DASHBOARD_URL = "192.168.178.42"
 display = Inkplate(Inkplate.INKPLATE_2BIT)

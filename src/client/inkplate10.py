@@ -10,9 +10,9 @@ from uarray import array
 from mcp23017 import MCP23017
 from micropython import const
 
-from src.client.shapes import Shapes
-from src.client.gfx import GFX
-from src.client.gfx_standard_font_01 import text_dict as std_font
+from shapes import Shapes
+from gfx import GFX
+from gfx_standard_font_01 import text_dict as std_font
 
 # Raw display constants for Inkplate 10
 D_ROWS = const(825)
