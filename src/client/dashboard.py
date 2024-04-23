@@ -9,7 +9,7 @@ display = Inkplate(Inkplate.INKPLATE_2BIT)
 # import socket
 
 import network
-import requests
+import urequests as requests
 
 
 def download_latest_png():
