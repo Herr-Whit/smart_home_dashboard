@@ -272,7 +272,7 @@ class GFX:
                 a = x2
             elif x2 > b:
                 b = x2
-            self.hline(a, y0, b-a+1, *args, **kwargs)
+            self.hline(a, y0, b - a + 1, *args, **kwargs)
             return
         dx01 = x1 - x0
         dy01 = y1 - y0
@@ -291,16 +291,16 @@ class GFX:
         if y1 == y2:
             last = y1
         else:
-            last = y1-1
+            last = y1 - 1
 
-        for y in range(y0, last+1):
+        for y in range(y0, last + 1):
             a = x0 + sa // dy01
             b = x0 + sb // dy02
             sa += dx01
             sb += dx02
             if a > b:
                 a, b = b, a
-            self.hline(a, y, b-a+1, *args, **kwargs)
+            self.hline(a, y, b - a + 1, *args, **kwargs)
 
         y = last
 
@@ -313,13 +313,14 @@ class GFX:
             sb += dx02
             if a > b:
                 a, b = b, a
-            self.hline(a, y, b-a+1, *args, **kwargs)
+            self.hline(a, y, b - a + 1, *args, **kwargs)
             y += 1
 
     def round_rect(self, x0, y0, width, height, radius, *args, **kwargs):
         """Rectangle with rounded corners drawing function.
         This works like a regular rect though! if radius = 0
-        Will draw the outline of a rextabgle with rounded corners with (x0,y0) at the top left"""
+        Will draw the outline of a rextabgle with rounded corners with (x0,y0) at the top left
+        """
         # shift to correct for start point location
         x0 += radius
         y0 += radius
@@ -342,8 +343,7 @@ class GFX:
             self.hline(
                 x0, y0 + height - radius + 1, width - 2 * radius + 1, *args, **kwargs
             )  # bottom
-            self.hline(x0, y0 - radius, width - 2 *
-                       radius + 1, *args, **kwargs)  # top
+            self.hline(x0, y0 - radius, width - 2 * radius + 1, *args, **kwargs)  # top
             while x < y:
                 if f >= 0:
                     y -= 1
@@ -447,7 +447,7 @@ class GFX:
         data = arr[2:]
         for x in range(width):
             for y in range(height):
-                bit = bool(data[x] & 2 ** y)
+                bit = bool(data[x] & 2**y)
                 # char pixel
                 if bit:
                     self.fill_rect(
@@ -505,8 +505,7 @@ class GFX:
 
                     # make sure something is sent even if not in font dict
                     try:
-                        self._place_char(x_roll, y_roll, char,
-                                         size, *args, **kwargs)
+                        self._place_char(x_roll, y_roll, char, size, *args, **kwargs)
                     except KeyError:
                         self._place_char(
                             x_roll, y_roll, "?CHAR?", size, *args, **kwargs

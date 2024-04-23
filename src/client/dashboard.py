@@ -23,17 +23,20 @@ def download_latest_png():
             f.write(response.content)
         return file_path
 
+
 def connect_to_wifi():
-    with open('credentials.json', 'r') as f:
+    with open("credentials.json", "r") as f:
         credentials = json.load(f)
 
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
-        print('connecting to network...')
+        print("connecting to network...")
         sta_if.active(True)
-        sta_if.connect(credentials['WIFI_SSID'], credentials['WIFI_PASSWORD'])
+        sta_if.connect(credentials["WIFI_SSID"], credentials["WIFI_PASSWORD"])
         while not sta_if.isconnected():
             pass
+
+
 def main():
     display.begin()
 
@@ -42,10 +45,11 @@ def main():
     connect_to_wifi()
     # The URL of the dashboard server
     file_path = download_latest_png()
-    print('file_path:', file_path)
+    print("file_path:", file_path)
     if file_path:
         print(f"Downloaded latest dashboard image to {file_path}")
         display.drawImageFile(0, 0, file_path)
+
 
 if __name__ == "__main__":
     main()

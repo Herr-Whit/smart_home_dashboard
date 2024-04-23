@@ -75,8 +75,7 @@ text_dict = {
     "X": bytearray(b"\x05\x07c\x14\x08\x14c"),
     "Y": bytearray(b"\x05\x07`\x10\x0f\x10`"),
     "Z": bytearray(b"\x05\x07CEIQa"),
-    
-    #until we get proper support for lowercase letters
+    # until we get proper support for lowercase letters
     "a": bytearray(b"\x05\x07?DDD?"),
     "b": bytearray(b"\x05\x07\x7fAII6"),
     "c": bytearray(b'\x05\x07>AAA"'),
@@ -103,7 +102,6 @@ text_dict = {
     "x": bytearray(b"\x05\x07c\x14\x08\x14c"),
     "y": bytearray(b"\x05\x07`\x10\x0f\x10`"),
     "z": bytearray(b"\x05\x07CEIQa"),
-
     "0": bytearray(b"\x05\x07>EIQ>"),
     "1": bytearray(b"\x05\x07\x11!\x7f\x01\x01"),
     "2": bytearray(b"\x05\x07!CEI1"),

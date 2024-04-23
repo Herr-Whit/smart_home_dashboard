@@ -1,5 +1,6 @@
 # Copyright © 2020 by Thorsten von Eicken.
 
+
 # Shapes is intended to be a mix-in that adds methods to a class that is derived from the
 # MicroPython framebuf.FrameBuffer class. It adds methods to draw circles, rounded rectangles
 # etc. All the code is cobbled together from elsewhere, please refer to the embedded copyright
@@ -56,8 +57,8 @@ class Shapes:
         y = 0
         err = 2 - 2 * r
         while x <= 0:
-            self.vline(x0 - x, y0 - y, 2*y+1, color)
-            self.vline(x0 + x, y0 - y, 2*y+1, color)
+            self.vline(x0 - x, y0 - y, 2 * y + 1, color)
+            self.vline(x0 + x, y0 - y, 2 * y + 1, color)
             e2 = err
             if e2 <= y:
                 y += 1
@@ -168,7 +169,8 @@ class Shapes:
     def round_rect(self, x0, y0, width, height, radius, color):
         """Rectangle with rounded corners drawing function.
         This works like a regular rect though! if radius = 0
-        Will draw the outline of a rextabgle with rounded corners with (x0,y0) at the top left"""
+        Will draw the outline of a rextabgle with rounded corners with (x0,y0) at the top left
+        """
         # shift to correct for start point location
         x0 += radius
         y0 += radius
@@ -184,7 +186,9 @@ class Shapes:
             y = radius
             self.vline(x0 - radius, y0, height - 2 * radius + 1, color)  # left
             self.vline(x0 + width - radius, y0, height - 2 * radius + 1, color)  # right
-            self.hline(x0, y0 + height - radius + 1, width - 2 * radius + 1, color)  # bottom
+            self.hline(
+                x0, y0 + height - radius + 1, width - 2 * radius + 1, color
+            )  # bottom
             self.hline(x0, y0 - radius, width - 2 * radius + 1, color)  # top
             while x < y:
                 if f >= 0:
@@ -241,12 +245,22 @@ class Shapes:
                 f += ddF_x
                 # part notation starts with 0 on left and 1 on right, and direction is noted
                 # top left
-                self.vline(x0 - y, y0 - x, 2 * x + 1 + height - 2 * radius, color)  # 0 to .25
-                self.vline(x0 - x, y0 - y, 2 * y + 1 + height - 2 * radius, color)  # .5 to .25
+                self.vline(
+                    x0 - y, y0 - x, 2 * x + 1 + height - 2 * radius, color
+                )  # 0 to .25
+                self.vline(
+                    x0 - x, y0 - y, 2 * y + 1 + height - 2 * radius, color
+                )  # .5 to .25
                 # top right
                 self.vline(
-                    x0 + x + width - 2 * radius, y0 - y, 2 * y + 1 + height - 2 * radius, color
+                    x0 + x + width - 2 * radius,
+                    y0 - y,
+                    2 * y + 1 + height - 2 * radius,
+                    color,
                 )  # .5 to .75
                 self.vline(
-                    x0 + y + width - 2 * radius, y0 - x, 2 * x + 1 + height - 2 * radius, color
+                    x0 + y + width - 2 * radius,
+                    y0 - x,
+                    2 * x + 1 + height - 2 * radius,
+                    color,
                 )  # 1 to .75
