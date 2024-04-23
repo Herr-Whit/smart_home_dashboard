@@ -18,7 +18,8 @@ def download_latest_png():
     response = requests.get(f"http://{DASHBOARD_URL}:8000/dashboard/")
     if response.status_code == 200:
         file_name = f"dashboard.png"
-        file_path = os.path.join("sd", file_name)
+        # file_path = os.path.join("sd", file_name)
+        file_path = file_name
         with open(file_name, "wb") as f:
             f.write(response.content)
         return file_path
