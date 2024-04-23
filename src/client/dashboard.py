@@ -58,25 +58,27 @@ def main():
     # Wake the SD (power ON)
     display.SDCardWake()
 
-    # Draw image in grayscale and display it
-    # Also print a message before and after
-    print("Starting to draw image from file!")
-    display.drawImageFile(0, 0, "sd/1.bmp", False)
-    display.display()
-    print("Finished drawing image from file!")
+
+
+
+    connect_to_wifi()
+    # The URL of the dashboard server
+    file_path = download_latest_png()
+
+    print("file_path:", file_path)
+    if file_path:
+        print(f"Downloaded latest dashboard image to {file_path}")
+        # Draw image in grayscale and display it
+        # Also print a message before and after
+        print("Starting to draw image from file!")
+        display.drawImageFile(0, 0, file_path, False)
+        display.display()
+        print("Finished drawing image from file!")
 
     # Put the SD card back to sleep to save power
     display.SDCardSleep()
     # To turn it back on, use:
     # display.SDCardWake()
-
-    connect_to_wifi()
-    # The URL of the dashboard server
-    file_path = download_latest_png()
-    print("file_path:", file_path)
-    if file_path:
-        print(f"Downloaded latest dashboard image to {file_path}")
-        display.drawImageFile(0, 0, file_path)
 
 
 if __name__ == "__main__":
