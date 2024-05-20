@@ -100,8 +100,9 @@ if __name__ == "__main__":
     # rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
 
     # set RTC.ALARM0 to fire after 10 seconds (waking the device)
-    sleep_duration = 60 * 1000
+    sleep_duration = 120 * 1000
     # rtc.alarm(rtc.ALARM0, )
 
+    machine.sleep(sleep_duration // 10)
     # put the device to sleep
     machine.deepsleep(sleep_duration)
