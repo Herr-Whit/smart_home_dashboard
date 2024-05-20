@@ -15,7 +15,7 @@ import machine
 
 def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
-
+    print("Downloading latest dashboard image")
     response = requests.get(f"http://{DASHBOARD_URL}:8000/dashboard/")
     if response.status_code == 200:
         file_name = f"dashboard.bmp"
@@ -23,6 +23,7 @@ def download_latest_dashboard_image():
         file_path = file_name
         with open(file_name, "wb") as f:
             f.write(response.content)
+        print(f'downloaded latest dashboard image: {file_path}')
         return file_path
 
 
@@ -37,6 +38,7 @@ def connect_to_wifi():
         sta_if.connect(credentials["WIFI_SSID"], credentials["WIFI_PASSWORD"])
         while not sta_if.isconnected():
             pass
+        print('connected!')
 
 
 def main():
@@ -64,20 +66,25 @@ def main():
 
     connect_to_wifi()
     # The URL of the dashboard server
-    file_path = download_latest_dashboard_image()
+    try:
+        file_path = download_latest_dashboard_image()
 
-    print("file_path:", file_path)
-    if file_path:
-        print(f"Downloaded latest dashboard image to {file_path}")
-        # Draw image in grayscale and display it
-        # Also print a message before and after
-        print("Starting to draw image from file!")
-        display.drawImageFile(0, 0, file_path, False)
-        display.display()
-        print("Finished drawing image from file!")
+        print("file_path:", file_path)
+        if file_path:
+            print(f"Downloaded latest dashboard image to {file_path}")
+            # Draw image in grayscale and display it
+            # Also print a message before and after
+            print("Starting to draw image from file!")
+            display.drawImageFile(0, 0, file_path, False)
+            display.display()
+            print("Finished drawing image from file!")
 
+    except Exception as e:
+        print("Failed to download and display dashboard image")
+        print(e)
+        display.writeLine("Failed to download and display dashboard image", 0, 0, 0, 0)
     # Put the SD card back to sleep to save power
-    display.SDCardSleep()
+    # display.SDCardSleep()
     # To turn it back on, use:
     # display.SDCardWake()
 
