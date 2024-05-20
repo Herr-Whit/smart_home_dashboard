@@ -25,6 +25,8 @@ def download_latest_dashboard_image():
             f.write(response.content)
         print(f'downloaded latest dashboard image: {file_path}')
         return file_path
+    else:
+        ValueError(f"Could not download latest dashboard image: {response.status_code}")
 
 
 def connect_to_wifi():
