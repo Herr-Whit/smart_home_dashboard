@@ -83,6 +83,7 @@ def main():
         print("Failed to download and display dashboard image")
         print(e)
         display.writeLine("Failed to download and display dashboard image", 0, 0, 0, 0)
+        raise e
     # Put the SD card back to sleep to save power
     # display.SDCardSleep()
     # To turn it back on, use:
@@ -92,6 +93,12 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+        sleep_duration = 120 * 1000
+        # rtc.alarm(rtc.ALARM0, )
+
+        machine.sleep(sleep_duration // 10)
+        # put the device to sleep
+        machine.deepsleep(sleep_duration)
     except:
         pass
 
@@ -100,9 +107,4 @@ if __name__ == "__main__":
     # rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
 
     # set RTC.ALARM0 to fire after 10 seconds (waking the device)
-    sleep_duration = 120 * 1000
-    # rtc.alarm(rtc.ALARM0, )
 
-    machine.sleep(sleep_duration // 10)
-    # put the device to sleep
-    machine.deepsleep(sleep_duration)
