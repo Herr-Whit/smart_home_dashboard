@@ -97,5 +97,4 @@ if __name__ == "__main__":
     # rtc.alarm(rtc.ALARM0, )
 
     # put the device to sleep
-    while True:
-        machine.deepsleep(sleep_duration)
+    machine.deepsleep(sleep_duration)
