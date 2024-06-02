@@ -115,7 +115,7 @@ def main():
 
         timing_info = get_timing_info()
 
-        sleep_duration = timing_info["time_to_sleep"]
+        sleep_duration = int(timing_info["time_to_sleep"] * 1000)
         # rtc.alarm(rtc.ALARM0, )
 
         machine.sleep(sleep_duration)
