@@ -3,7 +3,6 @@ import json
 import os
 import time
 from soldered_inkplate10 import Inkplate
-from src.client import inkplate10
 
 DASHBOARD_URL = "192.168.178.42"
 display = Inkplate(Inkplate.INKPLATE_2BIT)
