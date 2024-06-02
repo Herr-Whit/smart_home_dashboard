@@ -29,6 +29,16 @@ def download_latest_dashboard_image():
         ValueError(f"Could not download latest dashboard image: {response.status_code}")
 
 
+def get_timing_info():
+    """returns the time and duration in ms, when the dashboard is going to be available. Tibber usually publishes the
+    prices for the next day at 13:00."""
+    print("Getting timing info")
+    response = requests.get(f"http://{DASHBOARD_URL}:8000/timing/")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        ValueError(f"Could not get timing info: {response.status_code}")
+
 def connect_to_wifi():
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
@@ -68,6 +78,13 @@ def main():
 
     connect_to_wifi()
     # The URL of the dashboard server
+
+    now = time.time()
+
+    # If you want the current time in a more human-readable form
+    local_time = time.localtime(now)
+    year, month, day, hour, minute, second, _, _ = local_time
+
     try:
         file_path = download_latest_dashboard_image()
 
@@ -81,10 +98,24 @@ def main():
             display.display()
             print("Finished drawing image from file!")
 
+            display.printText(0, 0, f"Last Update: {year}-{month}-{day} {hour}:{minute}")
+
+        timing_info = get_timing_info()
+
+        sleep_duration = timing_info["time_to_sleep"]
+        # rtc.alarm(rtc.ALARM0, )
+
+        machine.sleep(sleep_duration)
+        # put the device to sleep
+        machine.deepsleep(sleep_duration)
+
+
     except Exception as e:
         print("Failed to download and display dashboard image")
         print(e)
-        display.writeLine("Failed to download and display dashboard image", 0, 0, 0, 0)
+        # Get the current time in seconds since the epoch
+
+        display.printText(0, 0, f"{year}-{month}-{day} {hour}:{minute}: Failed to download and display dashboard image")
         raise e
     # Put the SD card back to sleep to save power
     # display.SDCardSleep()
@@ -95,12 +126,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-        sleep_duration = 120 * 1000
-        # rtc.alarm(rtc.ALARM0, )
-
-        machine.sleep(sleep_duration // 10)
-        # put the device to sleep
-        machine.deepsleep(sleep_duration)
     except:
         pass
 
