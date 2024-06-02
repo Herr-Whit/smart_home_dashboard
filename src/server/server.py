@@ -37,6 +37,7 @@ def get_timing_info():
         }
     else:
         update_time = calculate_update_time(13, 15)
+    print(f"{update_time=}")
     return update_time
 
 

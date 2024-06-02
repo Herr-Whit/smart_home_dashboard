@@ -29,9 +29,9 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
     def build_dashboard(self, data: dict) -> str:
         print("Building simple dashboard")
-        print(data["tibber_data"])
+        print(f'{data=}'[0:100])
         tibber_df = self.wrangle_tibber_data(data["tibber_data"])
-        print(tibber_df)
+        print(f'{tibber_df=}'[0:100])
 
         # Create a broad barplot
         # sns.set_theme(rc={'figure.figsize': (11.7, 8.27)})
