@@ -3,6 +3,7 @@ import json
 import os
 import time
 from soldered_inkplate10 import Inkplate
+from src.client import inkplate10
 
 DASHBOARD_URL = "192.168.178.42"
 display = Inkplate(Inkplate.INKPLATE_2BIT)
@@ -12,6 +13,8 @@ import network
 import urequests as requests
 import machine
 
+import ntptime
+import utime
 
 def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
@@ -53,6 +56,22 @@ def connect_to_wifi():
         print('connected!')
 
 
+def get_current_time():
+    try:
+        ntptime.settime()  # Set the RTC using NTP
+        # Fetch local time
+        return utime.localtime()
+    except:
+        return None
+
+
+def format_time():
+    # Format the time as HH:MM:SS
+    time_tuple = get_current_time()
+    return "{:02}:{:02}:{:02}".format(time_tuple[3], time_tuple[4], time_tuple[5])
+
+
+
 def main():
     # Initialize the display, needs to be called only once
     display.begin()
@@ -77,14 +96,8 @@ def main():
 
 
     connect_to_wifi()
-    # The URL of the dashboard server
 
-    now = time.time()
-
-    # If you want the current time in a more human-readable form
-    local_time = time.localtime(now)
-    year, month, day, hour, minute, second, _, _ = local_time
-
+    time_str = format_time()
     try:
         file_path = download_latest_dashboard_image()
 
@@ -98,7 +111,7 @@ def main():
             display.display()
             print("Finished drawing image from file!")
 
-            display.printText(0, 0, f"Last Update: {year}-{month}-{day} {hour}:{minute}")
+            display.printText(0, 0, f"Last Update: {time_str}")
 
         timing_info = get_timing_info()
 
@@ -114,7 +127,7 @@ def main():
         print("Failed to download and display dashboard image")
         print(e)
         # Get the current time in seconds since the epoch
-        debug_text = f"{year}-{month}-{day} {hour}:{minute}: Failed to download and display dashboard image"
+        debug_text = f"{time_str}: Failed to download and display dashboard image"
         print(f"Printing debug text: {debug_text}")
         display.printText(0, 0, debug_text)
         display.display()
