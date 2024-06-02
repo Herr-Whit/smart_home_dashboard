@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.server.tibber_client import TibberClient
+from src.server.tibber import TibberClient, calculate_update_time
 
 
 class TestTibberClient(TestCase):
@@ -12,3 +12,10 @@ class TestTibberClient(TestCase):
         self.assertEqual(24, len(response["today"]))
         self.assertEqual(24, len(response["tomorrow"]))
         print(response)
+class Test(TestCase):
+    def test_calculate_update_time(self):
+        update_time = calculate_update_time(13, 15)
+        self.assertIsNotNone(update_time)
+        self.assertIsNotNone(update_time["target_time"])
+        self.assertIsNotNone(update_time["time_to_sleep"])
+        self.assertGreaterEqual(update_time["time_to_sleep"], 0)
