@@ -114,8 +114,10 @@ def main():
         print("Failed to download and display dashboard image")
         print(e)
         # Get the current time in seconds since the epoch
-
-        display.printText(0, 0, f"{year}-{month}-{day} {hour}:{minute}: Failed to download and display dashboard image")
+        debug_text = f"{year}-{month}-{day} {hour}:{minute}: Failed to download and display dashboard image"
+        print(f"Printing debug text: {debug_text}")
+        display.printText(0, 0, debug_text)
+        display.display()
         raise e
     # Put the SD card back to sleep to save power
     # display.SDCardSleep()
