@@ -32,7 +32,7 @@ def get_timing_info():
     """
     if sleep_time:
         update_time = {
-            "target_time": calculate_update_time(0, 0, sleep_time)["target_time"],
+            "target_time": calculate_update_time(sleep_time // (60 * 60) % 24, (sleep_time // 60) % 60, sleep_time % 60)["target_time"],
             "time_to_sleep": sleep_time
         }
     else:
