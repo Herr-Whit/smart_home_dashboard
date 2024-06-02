@@ -107,10 +107,11 @@ def main():
             # Also print a message before and after
             print("Starting to draw image from file!")
             display.drawImageFile(0, 0, file_path, False)
-            display.display()
             print("Finished drawing image from file!")
-
             display.printText(0, 0, f"Last Update: {time_str}")
+
+            display.display()
+            print('Display updated')
 
         timing_info = get_timing_info()
 
