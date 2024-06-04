@@ -1,7 +1,4 @@
 import os
-import datetime
-import time
-
 
 import dotenv
 from gql import gql, Client
@@ -63,27 +60,3 @@ class TibberClient:
 
         data = result["viewer"]["homes"][0]["currentSubscription"]["priceInfo"]
         return data
-
-
-def calculate_update_time(target_hour, target_minute, target_second=0):
-    """
-    calculates the time to sleep and target datetime until the specified time of day
-    :param target_hour:
-    :param target_minute:
-    :param target_second:
-    :return:
-    """
-    now = datetime.datetime.now()
-    target_time_today = now.replace(
-        hour=target_hour, minute=target_minute, second=target_second, microsecond=0
-    )
-
-    if target_time_today < now:
-        # Target time has already passed today, so set it for tomorrow
-        target_time = target_time_today + datetime.timedelta(days=1)
-    else:
-        # Target time has not yet passed today, so set it for today
-        target_time = target_time_today
-
-    time_to_sleep = int((target_time - now).total_seconds())
-    return {"target_time": target_time, "time_to_sleep": time_to_sleep}

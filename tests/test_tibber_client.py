@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from src.server.tibber import TibberClient, calculate_update_time
+from src.server.tibber import TibberClient
+from src.server.helpers import calculate_update_time
 
 
 class TestTibberClient(TestCase):

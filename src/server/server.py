@@ -10,7 +10,8 @@ import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from src.server.dashboard_builder import SimpleDashboardBuilder
-from src.server.tibber import TibberClient, calculate_update_time
+from src.server.tibber import TibberClient
+from src.server.helpers import calculate_update_time
 
 app = FastAPI()
 tibber_client = TibberClient()
@@ -38,7 +39,7 @@ def get_timing_info():
             "time_to_sleep": sleep_time,
         }
     else:
-        update_time = calculate_update_time(13, 15)
+        update_time = calculate_update_time()
     print(f"{update_time=}")
     return update_time
 
