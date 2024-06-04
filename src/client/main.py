@@ -27,7 +27,7 @@ def download_latest_dashboard_image():
         with open(file_name, "wb") as f:
             f.write(response.content)
         print(format_time() + f"downloaded latest dashboard image: {file_path}")
-        return file_path
+        return file_path, response.content
     else:
         ValueError(format_time() + f"Could not download latest dashboard image: {response.status_code}")
 
@@ -93,11 +93,12 @@ def main():
     retry_sleep = 2
     for i in range(10):
         try:
-            file_path = download_latest_dashboard_image()
+            file_path, data = download_latest_dashboard_image()
 
             print(format_time() + "file_path:", file_path)
             if file_path:
                 print(format_time() + f"Downloaded latest dashboard image to {file_path}")
+                print(format_time() + f"Downloaded latest dashboard {data}")
                 # Draw image in grayscale and display it
                 # Also print a message before and after
                 print(format_time() + "Starting to draw image from file!")
@@ -108,7 +109,7 @@ def main():
                 # Drawing or printing text will have no effect on the display itself before you call this function
                 display.display()
 
-                display.drawBitmap(0, 0, file_path)
+                display.drawBitmap(0, 0, data)
                 print(format_time() + "Finished drawing image from file!")
                 display.printText(0, 0, f"Last Update: {time_str}")
 
