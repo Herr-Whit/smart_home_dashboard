@@ -135,6 +135,7 @@ def main():
     # display.SDCardWake()
     print("unexected exit")
 
+
 if __name__ == "__main__":
     try:
         main()

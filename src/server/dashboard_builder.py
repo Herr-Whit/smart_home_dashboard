@@ -12,6 +12,18 @@ from src.server.helpers import png_to_bmp
 from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
+# Constants
+# Image size
+IMAGE_SIZE = (1200, 850)
+
+# Subplot positions
+BARPLOT_POS = (240, 20)
+LOWEST_PRICE_POS = (50, 200)
+CIRCULAR_GAUGE_POS = (50, 50)
+
+# Figure sizes
+BAR_FIGSIZE = (11, 6)
+
 
 class DashboardBuilder(ABC):
     @abstractmethod
@@ -41,7 +53,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
             ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#cccccc"))
+            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#eeeeee"))
 
             # Draw the arc in black
             angle = 360 * (value % 1 / max_value)
@@ -55,33 +67,71 @@ class SimpleDashboardBuilder(DashboardBuilder):
                 theta1=0,
                 theta2=angle,
                 color="black",
-                linewidth=20,
+                linewidth=8,
             )
             ax.add_patch(arc)
 
             # Add the text in black
             ax.text(
                 0.5,
-                0.5,
+                0.4,
                 f"{value:.0f}ct",
                 horizontalalignment="center",
                 verticalalignment="center",
-                fontsize=20,
+                fontsize=25,
                 color="black",
             )
             ax.text(
                 0.5,
-                0.3,
+                0.65,
                 f"{current_hour}h",
                 horizontalalignment="center",
                 verticalalignment="center",
-                fontsize=10,
-                color="grey",
+                fontsize=15,
+                color="black",
             )
 
             # Save the circular gauge as an image
             fig.savefig(
                 "circular_gauge.png",
+                bbox_inches="tight",
+                pad_inches=0,
+                transparent=True,
+            )
+            plt.close(fig)
+
+        def create_lowest_price_indicator(df):
+            lowest_price = df["Preis in ct"].min()
+            lowest_price_hour = df.loc[df["Preis in ct"].idxmin(), "hour"]
+            fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={"aspect": "equal"})
+            ax.axis("off")
+
+            # Draw the full circle in light gray
+            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#eeeeee"))
+
+            # Add the text in black
+            ax.text(
+                0.5,
+                0.4,
+                f"{lowest_price:.0f}ct",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=25,
+                color="black",
+            )
+            ax.text(
+                0.5,
+                0.65,
+                f"\$ {lowest_price_hour}h \$",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=15,
+                color="black",
+            )
+
+            # Save the circular gauge as an image
+            fig.savefig(
+                "lowest_price.png",
                 bbox_inches="tight",
                 pad_inches=0,
                 transparent=True,
@@ -98,11 +148,11 @@ class SimpleDashboardBuilder(DashboardBuilder):
             time = df["Zeit"]
             prices = df["Preis in ct"]
 
-            fig, ax = plt.subplots(figsize=(8, 6))
+            fig, ax = plt.subplots(figsize=BAR_FIGSIZE)
 
             # Draw bars in grayscale
             ax.fill_between(
-                time, prices, step="mid", alpha=0.5, color="black", label="Heute"
+                time, prices, step="mid", alpha=0.5, color="#444444", label="Heute"
             )
             if current_hour in hours.values and current_day in days.values:
                 current_price = df[df["hour"] == current_hour][
@@ -115,15 +165,26 @@ class SimpleDashboardBuilder(DashboardBuilder):
                     edgecolor="white",
                     linewidth=2,
                 )
+            lowest_price_time = df[df["Preis in ct"] == df["Preis in ct"].min()]["Zeit"]
+            lowest_price = df[df["Preis in ct"] == df["Preis in ct"].min()]["Preis in ct"]
+            ax.bar(
+                lowest_price_time,
+                lowest_price,
+                color="white",
+                edgecolor="black",
+                linewidth=2,
+            )
+
             ax.set_xticklabels(
                 [str(x) if i % 4 == 0 else "" for i, x in enumerate(list(df["hour"]))],
                 rotation=45,
                 horizontalalignment="right",
             )
+
+            ax.tick_params(axis="y", labelsize=15)
+            ax.tick_params(axis="x", labelsize=15)
             ax.set_ylabel("cent")
-            ax.set_xlabel("Stunde")
-            ax.set_title(f"Strompreisdaten vom {datetime.now().strftime('%d.%m.%Y')}")
-            ax.legend(loc="upper left")
+            ax.set_title(f"{datetime.now().strftime('%d.%m.%Y')}", fontsize=20)
 
             ax.set_ylim(15, 45)
 
@@ -143,23 +204,25 @@ class SimpleDashboardBuilder(DashboardBuilder):
             ].iloc[0]
             # Create the images
             create_circular_gauge(latest_value, current_hour)
+            create_lowest_price_indicator(df)
             create_bar_plot(df)
 
             # Combine the images using Pillow
             dashboard_image = Image.new(
-                "L", (1200, 600), color="white"
+                "L", IMAGE_SIZE, color="white"
             )  # 'L' mode for grayscale
             draw = ImageDraw.Draw(dashboard_image)
 
             # Load the created images
-            circular_gauge = Image.open("circular_gauge.png")  # .convert('RGB')
-            bar_plot = Image.open("bar_plot.png")  # .convert('RGB')
-
+            circular_gauge = Image.open("circular_gauge.png")
+            bar_plot = Image.open("bar_plot.png")
+            lowest_price = Image.open("lowest_price.png")
             # Paste the images onto the dashboard
             dashboard_image.paste(
-                circular_gauge, (50, 50), circular_gauge
+                circular_gauge, CIRCULAR_GAUGE_POS, circular_gauge
             )  # The circular gauge
-            dashboard_image.paste(bar_plot, (300, 50))  # The bar plot
+            dashboard_image.paste(lowest_price, LOWEST_PRICE_POS)  # The lowest price
+            dashboard_image.paste(bar_plot, BARPLOT_POS)  # The bar plot
 
             # Save the final dashboard image
             dashboard_path = self.get_image_path()
