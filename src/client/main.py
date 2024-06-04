@@ -95,40 +95,50 @@ def main():
     connect_to_wifi()
 
     time_str = format_time()
-    try:
-        file_path = download_latest_dashboard_image()
 
-        print("file_path:", file_path)
-        if file_path:
-            print(f"Downloaded latest dashboard image to {file_path}")
-            # Draw image in grayscale and display it
-            # Also print a message before and after
-            print("Starting to draw image from file!")
-            display.drawBitmap(0, 0, file_path)
-            print("Finished drawing image from file!")
-            display.printText(0, 0, f"Last Update: {time_str}")
+    number_of_tries = 3
+    retry_sleep = 10
+    for i in range(100):
+        try:
+            file_path = download_latest_dashboard_image()
 
-            display.display()
-            print("Display updated")
+            print("file_path:", file_path)
+            if file_path:
+                print(f"Downloaded latest dashboard image to {file_path}")
+                # Draw image in grayscale and display it
+                # Also print a message before and after
+                print("Starting to draw image from file!")
+                display.drawBitmap(0, 0, file_path)
+                print("Finished drawing image from file!")
+                display.printText(0, 0, f"Last Update: {time_str}")
 
-        timing_info = get_timing_info()
+                display.display()
+                print("Display updated")
 
-        sleep_duration = int(timing_info["time_to_sleep"] * 1000)
-        # rtc.alarm(rtc.ALARM0, )
+            timing_info = get_timing_info()
 
-        machine.sleep(sleep_duration)
-        # put the device to sleep
-        machine.deepsleep(sleep_duration)
+            sleep_duration = int(timing_info["time_to_sleep"] * 1000)
+            # rtc.alarm(rtc.ALARM0, )
 
-    except Exception as e:
-        print("Failed to download and display dashboard image")
-        print(e)
-        # Get the current time in seconds since the epoch
-        debug_text = f"{time_str}: Failed to download and display dashboard image"
-        print(f"Printing debug text: {debug_text}")
-        display.printText(0, 0, debug_text)
-        display.display()
-        raise e
+            machine.sleep(sleep_duration)
+            # put the device to sleep
+            machine.deepsleep(sleep_duration)
+
+        except Exception as e:
+            print("Failed to download and display dashboard image")
+            print(e)
+            if number_of_tries > 0:
+                number_of_tries = number_of_tries - 1
+                print(f"Retrying in {retry_sleep} seconds")
+                time.sleep(retry_sleep)
+                retry_sleep = retry_sleep * 2
+            else:
+                # Get the current time in seconds since the epoch
+                debug_text = f"{time_str}: Failed to download and display dashboard image"
+                print(f"Printing debug text: {debug_text}")
+                display.printText(0, 0, debug_text)
+                display.display()
+                raise e
     # Put the SD card back to sleep to save power
     # display.SDCardSleep()
     # To turn it back on, use:
