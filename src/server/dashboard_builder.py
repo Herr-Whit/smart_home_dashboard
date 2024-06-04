@@ -15,7 +15,7 @@ from datetime import datetime
 
 # Constants
 # Image size
-IMAGE_SIZE = (1200, 800)
+IMAGE_SIZE = (1200, 700)
 
 # Subplot positions
 BARPLOT_POS = (240, 20)
