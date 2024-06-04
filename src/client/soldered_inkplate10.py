@@ -61,6 +61,7 @@ RTC_RAM_by = 0x03
 RTC_DAY_ADDR = 0x07
 RTC_SECOND_ADDR = 0x04
 
+
 class _Inkplate:
     @classmethod
     def init(cls, i2c):
@@ -106,7 +107,7 @@ class _Inkplate:
         cls.GPIO0_PUP.digitalWrite(0)
 
         cls.VBAT_EN = gpioPin(cls._PCAL6416A_1, 9, modeOUTPUT)
-        cls.VBAT_EN.digitalWrite(0) # Initially disable the battery read
+        cls.VBAT_EN.digitalWrite(0)  # Initially disable the battery read
 
         cls.VBAT = ADC(Pin(35))
         cls.VBAT.atten(ADC.ATTN_11DB)
@@ -230,6 +231,7 @@ class _Inkplate:
         cls.TPS_PWRUP.digitalWrite(0)
         cls.TPS_WAKEUP.digitalWrite(0)
         cls.TPS_VCOM.digitalWrite(0)
+
     # ===== Methods that are independent of pixel bit depth
 
     # vscan_start begins a vertical scan by toggling CKV and SPV
@@ -272,8 +274,7 @@ class _Inkplate:
         cls.byte2gpio = array("L", bytes(4 * 256))
         for b in range(256):
             cls.byte2gpio[b] = (
-                (b & 0x3) << 4 | (b & 0xC) << 16 | (
-                    b & 0x10) << 19 | (b & 0xE0) << 20
+                (b & 0x3) << 4 | (b & 0xC) << 16 | (b & 0x10) << 19 | (b & 0xE0) << 20
             )
         # sanity check that all EPD_DATA bits got set at some point and no more
         union = 0
@@ -338,13 +339,15 @@ class _Inkplate:
 
     @classmethod
     def rtc_set_time(cls, rtc_hour, rtc_minute, rtc_second):
-        data = bytearray([
-            RTC_RAM_by,
-            170,  # Write in RAM 170 to know that RTC is set
-            cls.rtc_dec_to_bcd(rtc_second),
-            cls.rtc_dec_to_bcd(rtc_minute),
-            cls.rtc_dec_to_bcd(rtc_hour)
-        ])
+        data = bytearray(
+            [
+                RTC_RAM_by,
+                170,  # Write in RAM 170 to know that RTC is set
+                cls.rtc_dec_to_bcd(rtc_second),
+                cls.rtc_dec_to_bcd(rtc_minute),
+                cls.rtc_dec_to_bcd(rtc_hour),
+            ]
+        )
 
         cls._i2c.writeto(RTC_I2C_ADDR, data)
 
@@ -352,20 +355,24 @@ class _Inkplate:
     def rtc_set_date(cls, rtc_weekday, rtc_day, rtc_month, rtc_yr):
         rtcYear = rtc_yr - 2000
 
-        data = bytearray([
-            RTC_RAM_by,
-            170,  # Write in RAM 170 to know that RTC is set
-        ])
+        data = bytearray(
+            [
+                RTC_RAM_by,
+                170,  # Write in RAM 170 to know that RTC is set
+            ]
+        )
 
         cls._i2c.writeto(RTC_I2C_ADDR, data)
 
-        data = bytearray([
-            RTC_DAY_ADDR,
-            cls.rtc_dec_to_bcd(rtc_day),
-            cls.rtc_dec_to_bcd(rtc_weekday),
-            cls.rtc_dec_to_bcd(rtc_month),
-            cls.rtc_dec_to_bcd(rtcYear),
-        ])
+        data = bytearray(
+            [
+                RTC_DAY_ADDR,
+                cls.rtc_dec_to_bcd(rtc_day),
+                cls.rtc_dec_to_bcd(rtc_weekday),
+                cls.rtc_dec_to_bcd(rtc_month),
+                cls.rtc_dec_to_bcd(rtcYear),
+            ]
+        )
 
         cls._i2c.writeto(RTC_I2C_ADDR, data)
 
@@ -383,13 +390,13 @@ class _Inkplate:
         rtc_year = cls.rtc_bcd_to_dec(data[6]) + 2000
 
         return {
-            'second': rtc_second,
-            'minute': rtc_minute,
-            'hour': rtc_hour,
-            'day': rtc_day,
-            'weekday': rtc_weekday,
-            'month': rtc_month,
-            'year': rtc_year
+            "second": rtc_second,
+            "minute": rtc_minute,
+            "hour": rtc_hour,
+            "day": rtc_day,
+            "weekday": rtc_weekday,
+            "month": rtc_month,
+            "year": rtc_year,
         }
 
 
@@ -399,8 +406,14 @@ class InkplateMono(framebuf.FrameBuffer):
         super().__init__(self._framebuf, D_COLS, D_ROWS, framebuf.MONO_HMSB)
         ip = InkplateMono
         ip._gen_luts()
-        ip._wave = [ip.lut_blk, ip.lut_blk, ip.lut_blk,
-                    ip.lut_blk, ip.lut_blk, ip.lut_bw]
+        ip._wave = [
+            ip.lut_blk,
+            ip.lut_blk,
+            ip.lut_blk,
+            ip.lut_blk,
+            ip.lut_blk,
+            ip.lut_bw,
+        ]
 
     # gen_luts generates the look-up tables to convert a nibble (4 bits) of pixels to the
     # 32-bits that need to be pushed into the gpio port.
@@ -563,8 +576,9 @@ class InkplateGS2(framebuf.FrameBuffer):
         ix -= 1
         w1tc0[0] = off
         w1tc0[W1TC1 - W1TC0] = EPD_SPH
-        w1ts0[0] = b2g[lut[data >> 4] << 4 | lut[data & 0xF]
-                       ] | EPD_CL  # set data bits and clock
+        w1ts0[0] = (
+            b2g[lut[data >> 4] << 4 | lut[data & 0xF]] | EPD_CL
+        )  # set data bits and clock
         # w1tc0[0] = EPD_CL  # clear clock, leaving data bits (unreliable if data also cleared)
         w1tc0[0] = off  # clear data bits as well ready for next byte
         w1ts0[W1TS1 - W1TS0] = EPD_SPH
@@ -792,6 +806,7 @@ class InkplatePartial:
                 w1ts0[0] = lut[((odata & 0xF) << 4) + (ndata & 0xF)]
                 w1tc0[0] = off
 
+
 # Inkplate wraper to make it more easy for use
 
 
@@ -834,29 +849,24 @@ class Inkplate:
         _Inkplate.SD_ENABLE.digitalWrite(0)
         try:
             os.mount(
-                SDCard(
-                    slot=3,
-                    miso=Pin(12),
-                    mosi=Pin(13),
-                    sck=Pin(14),
-                    cs=Pin(15)),
-                "/sd"
+                SDCard(slot=3, miso=Pin(12), mosi=Pin(13), sck=Pin(14), cs=Pin(15)),
+                "/sd",
             )
         except:
             print("Sd card could not be read")
-    
+
     def SDCardSleep(self):
         _Inkplate.SD_ENABLE.digitalWrite(1)
         time.sleep_ms(5)
-    
+
     def SDCardWake(self):
         _Inkplate.SD_ENABLE.digitalWrite(0)
         time.sleep_ms(5)
 
     def gpioExpanderPin(self, expander, pin, mode):
-        if (expander == 1):
+        if expander == 1:
             return gpioPin(_Inkplate._PCAL6416A_1, pin, mode)
-        elif (expander == 2):
+        elif expander == 2:
             return gpioPin(_Inkplate._PCAL6416A_2, pin, mode)
 
     def clearDisplay(self):
@@ -968,9 +978,11 @@ class Inkplate:
             x -= w - 1
         if self.rotation in (2, 3):
             y -= h - 1
-        (self.ipm.fill_rect if self.displayMode == self.INKPLATE_1BIT else self.ipg.fill_rect)(
-            x, y, w, h, c
-        )
+        (
+            self.ipm.fill_rect
+            if self.displayMode == self.INKPLATE_1BIT
+            else self.ipg.fill_rect
+        )(x, y, w, h, c)
 
     def writeFastVLine(self, x, y, h, c):
         if self.rotation in (1, 3):
@@ -1180,7 +1192,7 @@ class Inkplate:
                         val >>= 1
 
                     self.drawPixel(x + i, y + h - j, val)
-        
+
     def rtcSetTime(self, rtc_hour, rtc_minute, rtc_second):
         return _Inkplate.rtc_set_time(rtc_hour, rtc_minute, rtc_second)
 

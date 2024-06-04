@@ -13,8 +13,6 @@ from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
 
-
-
 class DashboardBuilder(ABC):
     @abstractmethod
     def build_dashboard(self, data: DashboardInput) -> None:
@@ -35,31 +33,59 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
     def build_dashboard(self, data: dict) -> str:
 
-        df = self.wrangle_tibber_data(data['tibber_data'])
+        df = self.wrangle_tibber_data(data["tibber_data"])
         # Function to create the circular gauge element
 
         def create_circular_gauge(value, current_hour, max_value=1, size=(200, 200)):
-            fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={'aspect': 'equal'})
-            ax.axis('off')
+            fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={"aspect": "equal"})
+            ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), 0.4, color='#cccccc'))
+            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#cccccc"))
 
             # Draw the arc in black
             angle = 360 * (value % 1 / max_value)
 
             print(f"{value=}\n{angle=}")
-            arc = Arc((0.5, 0.5), 0.8, 0.8, angle=0, theta1=0, theta2=angle, color='black', linewidth=20)
+            arc = Arc(
+                (0.5, 0.5),
+                0.8,
+                0.8,
+                angle=0,
+                theta1=0,
+                theta2=angle,
+                color="black",
+                linewidth=20,
+            )
             ax.add_patch(arc)
 
             # Add the text in black
-            ax.text(0.5, 0.5, f'{value:.0f}ct', horizontalalignment='center', verticalalignment='center', fontsize=20,
-                    color='black')
-            ax.text(0.5, 0.3, f'{current_hour}h', horizontalalignment='center', verticalalignment='center', fontsize=10,
-                    color='grey')
+            ax.text(
+                0.5,
+                0.5,
+                f"{value:.0f}ct",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=20,
+                color="black",
+            )
+            ax.text(
+                0.5,
+                0.3,
+                f"{current_hour}h",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=10,
+                color="grey",
+            )
 
             # Save the circular gauge as an image
-            fig.savefig('circular_gauge.png', bbox_inches='tight', pad_inches=0, transparent=True)
+            fig.savefig(
+                "circular_gauge.png",
+                bbox_inches="tight",
+                pad_inches=0,
+                transparent=True,
+            )
             plt.close(fig)
 
         # Function to create the bar plot from a DataFrame
@@ -67,35 +93,42 @@ class SimpleDashboardBuilder(DashboardBuilder):
             current_hour = datetime.now().hour
             current_day = datetime.now().day
 
-            hours = df['hour']
-            days = df['day']
-            time = df['Zeit']
-            prices = df['Preis in ct']
+            hours = df["hour"]
+            days = df["day"]
+            time = df["Zeit"]
+            prices = df["Preis in ct"]
 
             fig, ax = plt.subplots(figsize=(8, 6))
 
             # Draw bars in grayscale
-            ax.fill_between(time, prices, step="mid", alpha=0.5, color='black', label='Heute')
+            ax.fill_between(
+                time, prices, step="mid", alpha=0.5, color="black", label="Heute"
+            )
             if current_hour in hours.values and current_day in days.values:
-                current_price = df[df['hour'] == current_hour][df['day'] == current_day]['Preis in ct'].iloc[0]
-                ax.bar(current_hour, current_price, color='black', edgecolor='white', linewidth=2)
+                current_price = df[df["hour"] == current_hour][
+                    df["day"] == current_day
+                ]["Preis in ct"].iloc[0]
+                ax.bar(
+                    current_hour,
+                    current_price,
+                    color="black",
+                    edgecolor="white",
+                    linewidth=2,
+                )
             ax.set_xticklabels(
-                [
-                    str(x) if i % 4 == 0 else ""
-                    for i, x in enumerate(list(df["hour"]))
-                ],
+                [str(x) if i % 4 == 0 else "" for i, x in enumerate(list(df["hour"]))],
                 rotation=45,
                 horizontalalignment="right",
             )
-            ax.set_ylabel('cent')
-            ax.set_xlabel('Stunde')
+            ax.set_ylabel("cent")
+            ax.set_xlabel("Stunde")
             ax.set_title(f"Strompreisdaten vom {datetime.now().strftime('%d.%m.%Y')}")
-            ax.legend(loc='upper left')
+            ax.legend(loc="upper left")
 
             ax.set_ylim(15, 45)
 
             # Save the plot as an image
-            fig.savefig('bar_plot.png', bbox_inches='tight', format='png')
+            fig.savefig("bar_plot.png", bbox_inches="tight", format="png")
             plt.close(fig)
 
         # Function to create the dashboard
@@ -105,37 +138,45 @@ class SimpleDashboardBuilder(DashboardBuilder):
             current_day = datetime.now().day
 
             # Find the value for the current hour
-            latest_value = df[df['hour'] == current_hour][df['day'] == current_day]['Preis in ct'].iloc[0]
+            latest_value = df[df["hour"] == current_hour][df["day"] == current_day][
+                "Preis in ct"
+            ].iloc[0]
             # Create the images
             create_circular_gauge(latest_value, current_hour)
             create_bar_plot(df)
 
             # Combine the images using Pillow
-            dashboard_image = Image.new('L', (1200, 600), color='white')  # 'L' mode for grayscale
+            dashboard_image = Image.new(
+                "L", (1200, 600), color="white"
+            )  # 'L' mode for grayscale
             draw = ImageDraw.Draw(dashboard_image)
 
             # Load the created images
-            circular_gauge = Image.open('circular_gauge.png')  # .convert('RGB')
-            bar_plot = Image.open('bar_plot.png')  # .convert('RGB')
+            circular_gauge = Image.open("circular_gauge.png")  # .convert('RGB')
+            bar_plot = Image.open("bar_plot.png")  # .convert('RGB')
 
             # Paste the images onto the dashboard
-            dashboard_image.paste(circular_gauge, (50, 50), circular_gauge)  # The circular gauge
+            dashboard_image.paste(
+                circular_gauge, (50, 50), circular_gauge
+            )  # The circular gauge
             dashboard_image.paste(bar_plot, (300, 50))  # The bar plot
 
             # Save the final dashboard image
             dashboard_path = self.get_image_path()
             dashboard_image.save(dashboard_path)
             # convert the png file to bmp
-            bmp_path = png_to_bmp(dashboard_path, dashboard_path.replace(".png", ".bmp"))
+            bmp_path = png_to_bmp(
+                dashboard_path, dashboard_path.replace(".png", ".bmp")
+            )
             return bmp_path
 
         return create_dashboard(df)
 
     def build_legacy_dashboard(self, data: dict) -> str:
         print("Building simple dashboard")
-        print(f'{data=}'[0:100])
+        print(f"{data=}"[0:100])
         tibber_df = self.wrangle_tibber_data(data["tibber_data"])
-        print(f'{tibber_df=}'[0:100])
+        print(f"{tibber_df=}"[0:100])
 
         # Create a broad barplot
         # sns.set_theme(rc={'figure.figsize': (11.7, 8.27)})

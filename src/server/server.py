@@ -1,6 +1,7 @@
 """
 A fastapi server that serves dashboard as an image
 """
+
 import argparse
 import os
 from datetime import datetime, timedelta
@@ -24,7 +25,7 @@ def create_dashboard():
     return FileResponse(file, media_type="image/png")
 
 
-@app.get('/timing/')
+@app.get("/timing/")
 def get_timing_info():
     """
     returns the time and duration in ms, when the dashboard is going to be available. Tibber usually publishes the
@@ -34,7 +35,7 @@ def get_timing_info():
     if sleep_time:
         update_time = {
             "target_time": datetime.now() + timedelta(seconds=sleep_time),
-            "time_to_sleep": sleep_time
+            "time_to_sleep": sleep_time,
         }
     else:
         update_time = calculate_update_time(13, 15)

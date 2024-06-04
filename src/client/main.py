@@ -15,6 +15,7 @@ import machine
 import ntptime
 import utime
 
+
 def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
     print("Downloading latest dashboard image")
@@ -25,7 +26,7 @@ def download_latest_dashboard_image():
         file_path = file_name
         with open(file_name, "wb") as f:
             f.write(response.content)
-        print(f'downloaded latest dashboard image: {file_path}')
+        print(f"downloaded latest dashboard image: {file_path}")
         return file_path
     else:
         ValueError(f"Could not download latest dashboard image: {response.status_code}")
@@ -41,6 +42,7 @@ def get_timing_info():
     else:
         ValueError(f"Could not get timing info: {response.status_code}")
 
+
 def connect_to_wifi():
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
@@ -52,7 +54,7 @@ def connect_to_wifi():
         sta_if.connect(credentials["WIFI_SSID"], credentials["WIFI_PASSWORD"])
         while not sta_if.isconnected():
             pass
-        print('connected!')
+        print("connected!")
 
 
 def get_current_time():
@@ -68,7 +70,6 @@ def format_time():
     # Format the time as HH:MM:SS
     time_tuple = get_current_time()
     return "{:02}:{:02}:{:02}".format(time_tuple[3] + 2, time_tuple[4], time_tuple[5])
-
 
 
 def main():
@@ -91,9 +92,6 @@ def main():
     # Wake the SD (power ON)
     display.SDCardWake()
 
-
-
-
     connect_to_wifi()
 
     time_str = format_time()
@@ -111,7 +109,7 @@ def main():
             display.printText(0, 0, f"Last Update: {time_str}")
 
             display.display()
-            print('Display updated')
+            print("Display updated")
 
         timing_info = get_timing_info()
 
@@ -121,7 +119,6 @@ def main():
         machine.sleep(sleep_duration)
         # put the device to sleep
         machine.deepsleep(sleep_duration)
-
 
     except Exception as e:
         print("Failed to download and display dashboard image")
@@ -149,4 +146,3 @@ if __name__ == "__main__":
     # rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
 
     # set RTC.ALARM0 to fire after 10 seconds (waking the device)
-

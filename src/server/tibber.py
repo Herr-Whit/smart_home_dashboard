@@ -74,7 +74,9 @@ def calculate_update_time(target_hour, target_minute, target_second=0):
     :return:
     """
     now = datetime.datetime.now()
-    target_time_today = now.replace(hour=target_hour, minute=target_minute, second=target_second, microsecond=0)
+    target_time_today = now.replace(
+        hour=target_hour, minute=target_minute, second=target_second, microsecond=0
+    )
 
     if target_time_today < now:
         # Target time has already passed today, so set it for tomorrow

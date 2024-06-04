@@ -12,6 +12,8 @@ class TestTibberClient(TestCase):
         self.assertEqual(24, len(response["today"]))
         self.assertEqual(24, len(response["tomorrow"]))
         print(response)
+
+
 class Test(TestCase):
     def test_calculate_update_time(self):
         update_time = calculate_update_time(13, 15)
