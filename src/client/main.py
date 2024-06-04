@@ -76,6 +76,13 @@ def main():
     # Initialize the display, needs to be called only once
     display.begin()
 
+    # Clear the frame buffer
+    display.clearDisplay()
+
+    # This has to be called every time you want to update the screen
+    # Drawing or printing text will have no effect on the display itself before you call this function
+    display.display()
+
     # SD Card must be initialised with this function
     # display.initSDCard()
     #
@@ -104,12 +111,6 @@ def main():
             # Draw image in grayscale and display it
             # Also print a message before and after
             print(format_time() + "Starting to draw image from file!")
-            # Clear the frame buffer
-            display.clearDisplay()
-
-            # This has to be called every time you want to update the screen
-            # Drawing or printing text will have no effect on the display itself before you call this function
-            display.display()
 
             display.drawBitmap(0, 0, data)
             print(format_time() + "Finished drawing image from file!")
