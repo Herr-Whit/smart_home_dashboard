@@ -77,14 +77,14 @@ def main():
     display.begin()
 
     # SD Card must be initialised with this function
-    display.initSDCard()
-
-    # Wait one second so we're totally sure it's initialized
-    time.sleep(1)
-
-    # Wake the SD (power ON)
-    display.SDCardWake()
-
+    # display.initSDCard()
+    #
+    # # Wait one second so we're totally sure it's initialized
+    # time.sleep(1)
+    #
+    # # Wake the SD (power ON)
+    # display.SDCardWake()
+    print('starting...')
     connect_to_wifi()
 
     time_str = format_time()
