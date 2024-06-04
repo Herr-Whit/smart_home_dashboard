@@ -133,7 +133,7 @@ def main():
     # display.SDCardSleep()
     # To turn it back on, use:
     # display.SDCardWake()
-
+    print("unexected exit")
 
 if __name__ == "__main__":
     try:
