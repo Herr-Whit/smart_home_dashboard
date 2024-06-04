@@ -104,7 +104,7 @@ def main():
             # Draw image in grayscale and display it
             # Also print a message before and after
             print("Starting to draw image from file!")
-            display.drawImageFile(0, 0, file_path, False)
+            display.drawBitmap(0, 0, file_path)
             print("Finished drawing image from file!")
             display.printText(0, 0, f"Last Update: {time_str}")
 
