@@ -1,17 +1,21 @@
 import os.path
-from abc import abstractmethod, ABC
 
 import pandas as pd
 import seaborn as sns
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Circle
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 from src.server.helpers import png_to_bmp
-from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
+IMG_DIR = os.path.join(os.getcwd(), "img")
+if not os.path.exists(IMG_DIR):
+    os.makedirs(IMG_DIR)
+LOWEST_PRICE_PATH = os.path.join(IMG_DIR, "lowest_price.png")
+BAR_PLOT_PATH = os.path.join(IMG_DIR, "bar_plot.png")
+CIRCULAR_GAUGE_PATH = os.path.join(IMG_DIR, "circular_gauge.png")
 
 # Constants
 # Image size
@@ -30,36 +34,17 @@ CIRCLE_FIGSIZE = (2.5, 2.5)
 
 TIME_FONTSIZE = 18
 
-
 BARGRAPH_COLOR = "#444444"
 
 CIRCLE_RADIUS = 0.4
 CIRCLE_COLOR = '#aaaaaa'
 
 
-class DashboardBuilder(ABC):
-    @abstractmethod
-    def build_dashboard(self, data: DashboardInput) -> None:
-        pass
+class SimpleDashboardBuilder:
 
+    def build_dashboard(self, df: pd.DataFrame) -> str:
 
-class SimpleDashboardBuilder(DashboardBuilder):
-
-    def wrangle_tibber_data(self, data: dict) -> pd.DataFrame:
-        next_two_days = data["today"] + data["tomorrow"]
-        df = pd.DataFrame(next_two_days)
-        df["startsAt"] = pd.to_datetime(df["startsAt"])
-        df["hour"] = df["startsAt"].dt.hour
-        df["day"] = df["startsAt"].dt.day
-        df["Zeit"] = df["day"].astype(str) + ". " + df["hour"].astype(str)
-        df["Preis in ct"] = df["total"] * 100
-        return df
-
-    def build_dashboard(self, data: dict) -> str:
-
-        df = self.wrangle_tibber_data(data["tibber_data"])
         # Function to create the circular gauge element
-
         def create_circular_gauge(value, current_hour, max_value=1):
             fig, ax = plt.subplots(
                 figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
@@ -107,7 +92,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
             # Save the circular gauge as an image
             fig.savefig(
-                "circular_gauge.png",
+                CIRCULAR_GAUGE_PATH,
                 bbox_inches="tight",
                 pad_inches=0,
                 transparent=True,
@@ -147,7 +132,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
             # Save the circular gauge as an image
             fig.savefig(
-                "lowest_price.png",
+                LOWEST_PRICE_PATH,
                 bbox_inches="tight",
                 pad_inches=0,
                 transparent=True,
@@ -207,7 +192,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
             ax.set_ylim(15, 45)
 
             # Save the plot as an image
-            fig.savefig("bar_plot.png", bbox_inches="tight", format="png")
+            fig.savefig(BAR_PLOT_PATH, bbox_inches="tight", format="png")
             plt.close(fig)
 
         # Function to create the dashboard
@@ -232,9 +217,9 @@ class SimpleDashboardBuilder(DashboardBuilder):
             draw = ImageDraw.Draw(dashboard_image)
 
             # Load the created images
-            circular_gauge = Image.open("circular_gauge.png")
-            bar_plot = Image.open("bar_plot.png")
-            lowest_price = Image.open("lowest_price.png")
+            circular_gauge = Image.open(CIRCULAR_GAUGE_PATH)
+            bar_plot = Image.open(BAR_PLOT_PATH)
+            lowest_price = Image.open(LOWEST_PRICE_PATH)
             # Paste the images onto the dashboard
             dashboard_image.paste(
                 circular_gauge, CIRCULAR_GAUGE_POS, circular_gauge
@@ -253,10 +238,8 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
         return create_dashboard(df)
 
-    def build_legacy_dashboard(self, data: dict) -> str:
+    def build_legacy_dashboard(self, tibber_df: pd.DataFrame) -> str:
         print("Building simple dashboard")
-        print(f"{data=}"[0:100])
-        tibber_df = self.wrangle_tibber_data(data["tibber_data"])
         print(f"{tibber_df=}"[0:100])
 
         # Create a broad barplot
@@ -292,9 +275,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
     @staticmethod
     def get_image_path():
         # Save the plot as an image
-        img_dir = os.path.join(os.getcwd(), "img")
-        if not os.path.exists(img_dir):
-            os.makedirs(img_dir)
+
         img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
-        img_path = os.path.join(img_dir, img_name)
+        img_path = os.path.join(IMG_DIR, img_name)
         return img_path

@@ -21,8 +21,7 @@ builder = SimpleDashboardBuilder()
 @app.get("/dashboard/")
 def create_dashboard():
     tibber_data = tibber_client.get_price()
-    data = {"tibber_data": tibber_data}
-    file = builder.build_dashboard(data)
+    file = builder.build_dashboard(tibber_data)
     return FileResponse(file, media_type="image/bmp")
 
 
