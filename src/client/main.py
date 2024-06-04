@@ -91,7 +91,7 @@ def main():
 
     number_of_tries = 3
     retry_sleep = 2
-    for i in range(100):
+    for i in range(10):
         try:
             file_path = download_latest_dashboard_image()
 
