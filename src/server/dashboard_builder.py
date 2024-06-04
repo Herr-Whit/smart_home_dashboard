@@ -45,7 +45,15 @@ class SimpleDashboardBuilder:
     def build_dashboard(self, df: pd.DataFrame) -> str:
 
         # Function to create the circular gauge element
-        def create_circular_gauge(value, current_hour, max_value=1):
+        def create_circular_gauge(price_df: pd.DataFrame):
+            now = datetime.now()
+            current_hour = now.hour
+            current_time = f"{now.day}. {current_hour}"
+
+            current_price = price_df[price_df["Zeit"] == current_time]["Preis in ct"].iloc[0]
+            max_value = price_df["Preis in ct"].max()
+            min_value = price_df["Preis in ct"].min()
+
             fig, ax = plt.subplots(
                 figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
             )
@@ -55,9 +63,9 @@ class SimpleDashboardBuilder:
             ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
 
             # Draw the arc in black
-            angle = 360 * (value % 1 / max_value)
+            angle = 360 * (current_price - min_value) / (max_value - min_value)
 
-            print(f"{value=}\n{angle=}")
+            print(f"{current_price=}\n{angle=}")
             arc = Arc(
                 (0.5, 0.5),
                 0.8,
@@ -74,7 +82,7 @@ class SimpleDashboardBuilder:
             ax.text(
                 0.5,
                 0.4,
-                f"{value:.0f}ct",
+                f"{current_price:.0f}ct",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=25,
@@ -206,7 +214,7 @@ class SimpleDashboardBuilder:
                 "Preis in ct"
             ].iloc[0]
             # Create the images
-            create_circular_gauge(latest_value, current_hour)
+            create_circular_gauge(df)
             create_lowest_price_indicator(df)
             create_bar_plot(df)
 
