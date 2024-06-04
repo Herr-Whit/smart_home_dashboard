@@ -16,6 +16,21 @@ import ntptime
 import utime
 
 
+def get_current_time():
+    try:
+        ntptime.settime()  # Set the RTC using NTP
+        # Fetch local time
+        return utime.localtime()
+    except:
+        return None
+
+
+def format_time():
+    # Format the time as HH:MM:SS
+    time_tuple = get_current_time()
+    return "{:02}:{:02}:{:02}".format(time_tuple[3] + 2, time_tuple[4], time_tuple[5])
+
+
 def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
     print("Downloading latest dashboard image")
@@ -27,7 +42,7 @@ def download_latest_dashboard_image():
         with open(file_name, "wb") as f:
             f.write(response.content)
         print(f"downloaded latest dashboard image: {file_path}")
-        return file_path
+        return file_path, response.content
     else:
         ValueError(f"Could not download latest dashboard image: {response.status_code}")
 
@@ -57,21 +72,6 @@ def connect_to_wifi():
         print("connected!")
 
 
-def get_current_time():
-    try:
-        ntptime.settime()  # Set the RTC using NTP
-        # Fetch local time
-        return utime.localtime()
-    except:
-        return None
-
-
-def format_time():
-    # Format the time as HH:MM:SS
-    time_tuple = get_current_time()
-    return "{:02}:{:02}:{:02}".format(time_tuple[3] + 2, time_tuple[4], time_tuple[5])
-
-
 def main():
     # Initialize the display, needs to be called only once
     display.begin()
@@ -96,7 +96,7 @@ def main():
 
     time_str = format_time()
     try:
-        file_path = download_latest_dashboard_image()
+        file_path, data = download_latest_dashboard_image()
 
         print("file_path:", file_path)
         if file_path:
@@ -104,7 +104,7 @@ def main():
             # Draw image in grayscale and display it
             # Also print a message before and after
             print("Starting to draw image from file!")
-            display.drawBitmap(0, 0, file_path)
+            display.drawBitmap(0, 0, data, 600, 1200)
             print("Finished drawing image from file!")
             display.printText(0, 0, f"Last Update: {time_str}")
 
