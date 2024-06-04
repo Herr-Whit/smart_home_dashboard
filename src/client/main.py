@@ -89,59 +89,59 @@ def main():
 
     time_str = format_time()
 
-    number_of_tries = 3
-    retry_sleep = 2
-    for i in range(10):
-        try:
-            print('Starting logic')
-            print(format_time() + "Downloading latest dashboard image")
-            file_path, data = download_latest_dashboard_image()
+    # number_of_tries = 3
+    # retry_sleep = 2
+    # for i in range(10):
+    try:
+        print('Starting logic')
+        print(format_time() + "Downloading latest dashboard image")
+        file_path, data = download_latest_dashboard_image()
 
-            print(format_time() + "file_path:", file_path)
-            if file_path:
-                print(format_time() + f"Downloaded latest dashboard image to {file_path}")
-                print(format_time() + f"Downloaded latest dashboard {data}")
-                # Draw image in grayscale and display it
-                # Also print a message before and after
-                print(format_time() + "Starting to draw image from file!")
-                # Clear the frame buffer
-                display.clearDisplay()
+        print(format_time() + "file_path:", file_path)
+        if file_path:
+            print(format_time() + f"Downloaded latest dashboard image to {file_path}")
+            print(format_time() + f"Downloaded latest dashboard {data}")
+            # Draw image in grayscale and display it
+            # Also print a message before and after
+            print(format_time() + "Starting to draw image from file!")
+            # Clear the frame buffer
+            display.clearDisplay()
 
-                # This has to be called every time you want to update the screen
-                # Drawing or printing text will have no effect on the display itself before you call this function
-                display.display()
+            # This has to be called every time you want to update the screen
+            # Drawing or printing text will have no effect on the display itself before you call this function
+            display.display()
 
-                display.drawBitmap(0, 0, data)
-                print(format_time() + "Finished drawing image from file!")
-                display.printText(0, 0, f"Last Update: {time_str}")
+            display.drawBitmap(0, 0, data)
+            print(format_time() + "Finished drawing image from file!")
+            display.printText(0, 0, f"Last Update: {time_str}")
 
-                display.display()
-                print(format_time() + "Display updated")
+            display.display()
+            print(format_time() + "Display updated")
 
-            timing_info = get_timing_info()
+        timing_info = get_timing_info()
 
-            sleep_duration = int(timing_info["time_to_sleep"] * 1000)
-            # rtc.alarm(rtc.ALARM0, )
+        sleep_duration = int(timing_info["time_to_sleep"] * 1000)
+        # rtc.alarm(rtc.ALARM0, )
 
-            machine.sleep(sleep_duration)
-            # put the device to sleep
-            machine.deepsleep(sleep_duration)
+        machine.sleep(sleep_duration)
+        # put the device to sleep
+        machine.deepsleep(sleep_duration)
 
-        except Exception as e:
-            print(format_time() + "Failed to download and display dashboard image")
-            print(e)
-            if number_of_tries > 0:
-                number_of_tries = number_of_tries - 1
-                print(format_time() + f"Retrying in {retry_sleep} seconds")
-                time.sleep(retry_sleep)
-                retry_sleep = retry_sleep * 2
-            else:
-                # Get the current time in seconds since the epoch
-                debug_text = f"{time_str}: Failed to download and display dashboard image"
-                print(format_time() + f"Printing debug text: {debug_text}")
-                display.printText(0, 0, debug_text)
-                display.display()
-                raise e
+    except Exception as e:
+        print(format_time() + "Failed to download and display dashboard image")
+        print(e)
+        # if number_of_tries > 0:
+        #     number_of_tries = number_of_tries - 1
+        #     print(format_time() + f"Retrying in {retry_sleep} seconds")
+        #     time.sleep(retry_sleep)
+        #     retry_sleep = retry_sleep * 2
+        # else:
+        # Get the current time in seconds since the epoch
+        debug_text = f"{time_str}: Failed to download and display dashboard image"
+        print(format_time() + f"Printing debug text: {debug_text}")
+        display.printText(0, 0, debug_text)
+        display.display()
+        raise e
     # Put the SD card back to sleep to save power
     # display.SDCardSleep()
     # To turn it back on, use:
