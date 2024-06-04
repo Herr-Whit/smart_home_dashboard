@@ -12,18 +12,24 @@ from src.server.helpers import png_to_bmp
 from src.server.models.dashboard_input import DashboardInput
 from datetime import datetime
 
+
 # Constants
 # Image size
 IMAGE_SIZE = (1200, 850)
 
 # Subplot positions
 BARPLOT_POS = (240, 20)
-LOWEST_PRICE_POS = (50, 200)
+LOWEST_PRICE_POS = (50, 250)
 CIRCULAR_GAUGE_POS = (50, 50)
 
 # Figure sizes
 BAR_FIGSIZE = (11, 6)
+CIRCLE_FIGSIZE = (2.5, 2.5)
 
+# Elements
+
+TIME_FONTSIZE = 18
+CIRCLE_RADIUS = 0.4
 
 class DashboardBuilder(ABC):
     @abstractmethod
@@ -48,12 +54,12 @@ class SimpleDashboardBuilder(DashboardBuilder):
         df = self.wrangle_tibber_data(data["tibber_data"])
         # Function to create the circular gauge element
 
-        def create_circular_gauge(value, current_hour, max_value=1, size=(200, 200)):
-            fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={"aspect": "equal"})
+        def create_circular_gauge(value, current_hour, max_value=1):
+            fig, ax = plt.subplots(figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"})
             ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#eeeeee"))
+            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="#eeeeee"))
 
             # Draw the arc in black
             angle = 360 * (value % 1 / max_value)
@@ -87,7 +93,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
                 f"{current_hour}h",
                 horizontalalignment="center",
                 verticalalignment="center",
-                fontsize=15,
+                fontsize=TIME_FONTSIZE,
                 color="black",
             )
 
@@ -103,11 +109,11 @@ class SimpleDashboardBuilder(DashboardBuilder):
         def create_lowest_price_indicator(df):
             lowest_price = df["Preis in ct"].min()
             lowest_price_hour = df.loc[df["Preis in ct"].idxmin(), "hour"]
-            fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={"aspect": "equal"})
+            fig, ax = plt.subplots(figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"})
             ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), 0.4, color="#eeeeee"))
+            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="#eeeeee"))
 
             # Add the text in black
             ax.text(
@@ -125,7 +131,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
                 f"\$ {lowest_price_hour}h \$",
                 horizontalalignment="center",
                 verticalalignment="center",
-                fontsize=15,
+                fontsize=TIME_FONTSIZE,
                 color="black",
             )
 
