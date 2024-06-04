@@ -29,7 +29,13 @@ CIRCLE_FIGSIZE = (2.5, 2.5)
 # Elements
 
 TIME_FONTSIZE = 18
+
+
+BARGRAPH_COLOR = "#444444"
+
 CIRCLE_RADIUS = 0.4
+CIRCLE_COLOR = BARGRAPH_COLOR
+
 
 class DashboardBuilder(ABC):
     @abstractmethod
@@ -55,11 +61,13 @@ class SimpleDashboardBuilder(DashboardBuilder):
         # Function to create the circular gauge element
 
         def create_circular_gauge(value, current_hour, max_value=1):
-            fig, ax = plt.subplots(figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"})
+            fig, ax = plt.subplots(
+                figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
+            )
             ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="#eeeeee"))
+            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
 
             # Draw the arc in black
             angle = 360 * (value % 1 / max_value)
@@ -109,11 +117,13 @@ class SimpleDashboardBuilder(DashboardBuilder):
         def create_lowest_price_indicator(df):
             lowest_price = df["Preis in ct"].min()
             lowest_price_hour = df.loc[df["Preis in ct"].idxmin(), "hour"]
-            fig, ax = plt.subplots(figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"})
+            fig, ax = plt.subplots(
+                figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
+            )
             ax.axis("off")
 
             # Draw the full circle in light gray
-            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="#eeeeee"))
+            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
 
             # Add the text in black
             ax.text(
@@ -158,7 +168,7 @@ class SimpleDashboardBuilder(DashboardBuilder):
 
             # Draw bars in grayscale
             ax.fill_between(
-                time, prices, step="mid", alpha=0.5, color="#444444", label="Heute"
+                time, prices, step="mid", alpha=0.5, color=BARGRAPH_COLOR, label="Heute"
             )
             if current_hour in hours.values and current_day in days.values:
                 current_price = df[df["hour"] == current_hour][
@@ -172,7 +182,9 @@ class SimpleDashboardBuilder(DashboardBuilder):
                     linewidth=2,
                 )
             lowest_price_time = df[df["Preis in ct"] == df["Preis in ct"].min()]["Zeit"]
-            lowest_price = df[df["Preis in ct"] == df["Preis in ct"].min()]["Preis in ct"]
+            lowest_price = df[df["Preis in ct"] == df["Preis in ct"].min()][
+                "Preis in ct"
+            ]
             ax.bar(
                 lowest_price_time,
                 lowest_price,
