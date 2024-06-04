@@ -67,7 +67,7 @@ def get_current_time():
 def format_time():
     # Format the time as HH:MM:SS
     time_tuple = get_current_time()
-    return "{:02}:{:02}:{:02}".format(time_tuple[3], time_tuple[4], time_tuple[5])
+    return "{:02}:{:02}:{:02}".format(time_tuple[3] + 2, time_tuple[4], time_tuple[5])
 
 
 
