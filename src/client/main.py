@@ -93,6 +93,8 @@ def main():
     retry_sleep = 2
     for i in range(10):
         try:
+            print('Starting logic')
+            print(format_time() + "Downloading latest dashboard image")
             file_path, data = download_latest_dashboard_image()
 
             print(format_time() + "file_path:", file_path)
