@@ -83,5 +83,5 @@ def calculate_update_time(target_hour, target_minute, target_second=0):
         # Target time has not yet passed today, so set it for today
         target_time = target_time_today
 
-    time_to_sleep = (target_time - now).total_seconds()
+    time_to_sleep = int((target_time - now).total_seconds())
     return {"target_time": target_time, "time_to_sleep": time_to_sleep}
