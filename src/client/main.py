@@ -18,7 +18,7 @@ import utime
 
 def download_latest_dashboard_image():
     """Query the dashboard server for the latest png to display on the screen"""
-    print("Downloading latest dashboard image")
+    print(format_time() + "Downloading latest dashboard image")
     response = requests.get(f"http://{DASHBOARD_URL}:8000/dashboard/")
     if response.status_code == 200:
         file_name = f"dashboard.bmp"
@@ -26,16 +26,16 @@ def download_latest_dashboard_image():
         file_path = file_name
         with open(file_name, "wb") as f:
             f.write(response.content)
-        print(f"downloaded latest dashboard image: {file_path}")
+        print(format_time() + f"downloaded latest dashboard image: {file_path}")
         return file_path
     else:
-        ValueError(f"Could not download latest dashboard image: {response.status_code}")
+        ValueError(format_time() + f"Could not download latest dashboard image: {response.status_code}")
 
 
 def get_timing_info():
     """returns the time and duration in ms, when the dashboard is going to be available. Tibber usually publishes the
     prices for the next day at 13:00."""
-    print("Getting timing info")
+    print(format_time() + "Getting timing info")
     response = requests.get(f"http://{DASHBOARD_URL}:8000/timing/")
     if response.status_code == 200:
         return response.json()
@@ -49,12 +49,12 @@ def connect_to_wifi():
 
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
-        print("connecting to network...")
+        print(format_time() + "connecting to network...")
         sta_if.active(True)
         sta_if.connect(credentials["WIFI_SSID"], credentials["WIFI_PASSWORD"])
         while not sta_if.isconnected():
             pass
-        print("connected!")
+        print(format_time() + "connected!")
 
 
 def get_current_time():
@@ -102,18 +102,18 @@ def main():
         try:
             file_path = download_latest_dashboard_image()
 
-            print("file_path:", file_path)
+            print(format_time() + "file_path:", file_path)
             if file_path:
-                print(f"Downloaded latest dashboard image to {file_path}")
+                print(format_time() + f"Downloaded latest dashboard image to {file_path}")
                 # Draw image in grayscale and display it
                 # Also print a message before and after
-                print("Starting to draw image from file!")
+                print(format_time() + "Starting to draw image from file!")
                 display.drawBitmap(0, 0, file_path)
-                print("Finished drawing image from file!")
+                print(format_time() + "Finished drawing image from file!")
                 display.printText(0, 0, f"Last Update: {time_str}")
 
                 display.display()
-                print("Display updated")
+                print(format_time() + "Display updated")
 
             timing_info = get_timing_info()
 
@@ -125,17 +125,17 @@ def main():
             machine.deepsleep(sleep_duration)
 
         except Exception as e:
-            print("Failed to download and display dashboard image")
+            print(format_time() + "Failed to download and display dashboard image")
             print(e)
             if number_of_tries > 0:
                 number_of_tries = number_of_tries - 1
-                print(f"Retrying in {retry_sleep} seconds")
+                print(format_time() + f"Retrying in {retry_sleep} seconds")
                 time.sleep(retry_sleep)
                 retry_sleep = retry_sleep * 2
             else:
                 # Get the current time in seconds since the epoch
                 debug_text = f"{time_str}: Failed to download and display dashboard image"
-                print(f"Printing debug text: {debug_text}")
+                print(format_time() + f"Printing debug text: {debug_text}")
                 display.printText(0, 0, debug_text)
                 display.display()
                 raise e
