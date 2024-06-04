@@ -32,10 +32,12 @@ class SimpleDashboardBuilder(DashboardBuilder):
         df["Zeit"] = df["day"].astype(str) + ". " + df["hour"].astype(str)
         df["Preis in ct"] = df["total"] * 100
         return df
+
     def build_dashboard(self, data: dict) -> str:
 
         df = self.wrangle_tibber_data(data['tibber_data'])
         # Function to create the circular gauge element
+
         def create_circular_gauge(value, current_hour, max_value=1, size=(200, 200)):
             fig, ax = plt.subplots(figsize=(2, 2), subplot_kw={'aspect': 'equal'})
             ax.axis('off')
@@ -121,9 +123,11 @@ class SimpleDashboardBuilder(DashboardBuilder):
             dashboard_image.paste(bar_plot, (300, 50))  # The bar plot
 
             # Save the final dashboard image
-            dashboard_path = 'dashboard_combined.png'
+            dashboard_path = self.get_image_path()
             dashboard_image.save(dashboard_path)
-            return dashboard_path
+            # convert the png file to bmp
+            bmp_path = png_to_bmp(dashboard_path, dashboard_path.replace(".png", ".bmp"))
+            return bmp_path
 
         return create_dashboard(df)
 
@@ -157,13 +161,18 @@ class SimpleDashboardBuilder(DashboardBuilder):
             tibber_df["tax"].mean() * 100, ls="--", color="r", label="Kostenlos"
         )
 
+        img_path = self.get_image_path()
+        tibber_plot.get_figure().savefig(img_path, format="png")
+        # convert the png file to bmp
+        bmp_path = png_to_bmp(img_path, img_path.replace(".png", ".bmp"))
+        return bmp_path
+
+    @staticmethod
+    def get_image_path():
         # Save the plot as an image
         img_dir = os.path.join(os.getcwd(), "img")
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
         img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
         img_path = os.path.join(img_dir, img_name)
-        tibber_plot.get_figure().savefig(img_path, format="png")
-        # convert the png file to bmp
-        bmp_path = png_to_bmp(img_path, img_path.replace(".png", ".bmp"))
-        return bmp_path
+        return img_path
