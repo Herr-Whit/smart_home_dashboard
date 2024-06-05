@@ -29,16 +29,22 @@ class HyundaiClient:
                 ValueError(f"Could not get car state: {response.status_code}")
 
     def get_battery_level(self):
-        car_state = self.get_car_state()
+        try:
+            car_state = self.get_car_state()
 
-        if car_state is None:
-            raise ValueError("Could not get car state")
+            if car_state is None:
+                raise ValueError("Could not get car state")
 
-        return {
-            "battery_level": car_state["data"]["evStatus"]["batteryStatus"],
-            "timestamp": car_state["timestamp"],
-        }
-
+            return {
+                "battery_level": car_state["data"]["evStatus"]["batteryStatus"],
+                "timestamp": car_state["timestamp"],
+            }
+        except Exception as e:
+            print(e)
+            return {
+                "battery_level": "??",
+                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
     @property
     def cache(self):
         # Check if data/car_state.json exists

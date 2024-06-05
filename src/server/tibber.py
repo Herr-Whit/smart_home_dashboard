@@ -41,9 +41,12 @@ class TibberClient:
         :return:
         """
         if self.current_file_exists():
-            return self.fetch_from_file()
+            data = self.fetch_from_file()
         else:
-            return self.fetch_from_api()
+            data = self.fetch_from_api()
+            if data.shape[0] != 48:
+                data = self.fetch_from_api()
+        return data
 
     def fetch_from_api(self):
         query = gql(
@@ -82,7 +85,7 @@ class TibberClient:
         result = self.client.execute(query)
         data = result["viewer"]["homes"][0]["currentSubscription"]["priceInfo"]
         df = self.wrangle_tibber_data(data)
-        if datetime.datetime.now().hour >= 13:
+        if datetime.datetime.now().hour >= 13 and df.shape[0] == 48:
             if not os.path.exists("data"):
                 os.makedirs("data")
             df.to_csv(self.get_current_file_path(), index=False)
