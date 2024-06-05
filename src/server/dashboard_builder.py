@@ -149,8 +149,9 @@ class SimpleDashboardBuilder:
 
         # Function to create the bar plot from a DataFrame
         def create_bar_plot(df):
-            current_hour = datetime.now().hour
-            current_day = datetime.now().day
+            now = datetime.now()
+            current_hour = now.hour
+            current_day = now.day
 
             hours = df["hour"]
             days = df["day"]
@@ -168,7 +169,7 @@ class SimpleDashboardBuilder:
                     df["day"] == current_day
                 ]["Preis in ct"].iloc[0]
                 ax.bar(
-                    current_hour,
+                    f"{current_day}. {current_hour}",
                     current_price,
                     color="black",
                     edgecolor="white",
