@@ -10,18 +10,23 @@ import uvicorn as uvicorn
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from src.server.dashboard_builder import SimpleDashboardBuilder
+from src.server.hyundai import HyundaiClient
 from src.server.tibber import TibberClient
 from src.server.helpers import calculate_update_time
 
 app = FastAPI()
 tibber_client = TibberClient()
+hyundai_client = HyundaiClient()
 builder = SimpleDashboardBuilder()
 
 
 @app.get("/dashboard/")
 def create_dashboard():
     tibber_data = tibber_client.get_price()
-    file = builder.build_dashboard(tibber_data)
+    hyundai_data = hyundai_client.get_battery_level()
+    file = builder.build_dashboard(
+        {"tibber_data": tibber_data, "battery_level": hyundai_data}
+    )
     return FileResponse(file, media_type="image/bmp")
 
 

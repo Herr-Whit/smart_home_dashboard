@@ -22,6 +22,7 @@ class TibberClient:
 
         # Create a GraphQL client using the defined transport
         self.client = Client(transport=transport, fetch_schema_from_transport=True)
+
     @staticmethod
     def wrangle_tibber_data(data: dict) -> pd.DataFrame:
         next_two_days = data["today"] + data["tomorrow"]
@@ -89,6 +90,7 @@ class TibberClient:
 
     def current_file_exists(self):
         return os.path.exists("data") and os.path.isfile(self.get_current_file_path())
+
     @staticmethod
     def get_current_file_path(date=None):
         if date is None:

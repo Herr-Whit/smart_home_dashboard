@@ -14,6 +14,7 @@ IMG_DIR = os.path.join(os.getcwd(), "img")
 if not os.path.exists(IMG_DIR):
     os.makedirs(IMG_DIR)
 LOWEST_PRICE_PATH = os.path.join(IMG_DIR, "lowest_price.png")
+BATTERY_LEVEL_PATH = os.path.join(IMG_DIR, "battery_level.png")
 BAR_PLOT_PATH = os.path.join(IMG_DIR, "bar_plot.png")
 CIRCULAR_GAUGE_PATH = os.path.join(IMG_DIR, "circular_gauge.png")
 
@@ -25,6 +26,7 @@ IMAGE_SIZE = (1200, 700)
 BARPLOT_POS = (240, 20)
 LOWEST_PRICE_POS = (50, 250)
 CIRCULAR_GAUGE_POS = (50, 50)
+BATTERY_LEVEL_POS = (50, 450)
 
 # Figure sizes
 BAR_FIGSIZE = (11, 6)
@@ -37,12 +39,12 @@ TIME_FONTSIZE = 18
 BARGRAPH_COLOR = "#444444"
 
 CIRCLE_RADIUS = 0.4
-CIRCLE_COLOR = '#aaaaaa'
+CIRCLE_COLOR = "#aaaaaa"
 
 
 class SimpleDashboardBuilder:
 
-    def build_dashboard(self, df: pd.DataFrame) -> str:
+    def build_dashboard(self, data: dict) -> str:
 
         # Function to create the circular gauge element
         def create_circular_gauge(price_df: pd.DataFrame):
@@ -50,7 +52,9 @@ class SimpleDashboardBuilder:
             current_hour = now.hour
             current_time = f"{now.day}. {current_hour}"
 
-            current_price = price_df[price_df["Zeit"] == current_time]["Preis in ct"].iloc[0]
+            current_price = price_df[price_df["Zeit"] == current_time][
+                "Preis in ct"
+            ].iloc[0]
             max_value = price_df["Preis in ct"].max()
             min_value = price_df["Preis in ct"].min()
 
@@ -147,6 +151,44 @@ class SimpleDashboardBuilder:
             )
             plt.close(fig)
 
+        def create_battery_level_indicator(battery_level):
+            fig, ax = plt.subplots(
+                figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
+            )
+            ax.axis("off")
+
+            # Draw the full circle in light gray
+            ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
+
+            ax.text(
+                0.5,
+                0.65,
+                f"{datetime.now().hour}h",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=TIME_FONTSIZE,
+                color="black",
+            )
+            # Add the text in black
+            ax.text(
+                0.5,
+                0.4,
+                f"EV: {battery_level:.0f}%",
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=25,
+                color="black",
+            )
+
+            # Save the circular gauge as an image
+            fig.savefig(
+                BATTERY_LEVEL_PATH,
+                bbox_inches="tight",
+                pad_inches=0,
+                transparent=True,
+            )
+            plt.close(fig)
+
         # Function to create the bar plot from a DataFrame
         def create_bar_plot(df):
             now = datetime.now()
@@ -205,7 +247,9 @@ class SimpleDashboardBuilder:
             plt.close(fig)
 
         # Function to create the dashboard
-        def create_dashboard(df):
+        def create_dashboard(data: dict):
+            df = data["tibber_data"]
+            battery_level = data["battery_level"]
             # Get the last value for the circular gauge
             current_hour = datetime.now().hour
             current_day = datetime.now().day
@@ -217,6 +261,7 @@ class SimpleDashboardBuilder:
             # Create the images
             create_circular_gauge(df)
             create_lowest_price_indicator(df)
+            create_battery_level_indicator(battery_level)
             create_bar_plot(df)
 
             # Combine the images using Pillow
@@ -229,13 +274,16 @@ class SimpleDashboardBuilder:
             circular_gauge = Image.open(CIRCULAR_GAUGE_PATH)
             bar_plot = Image.open(BAR_PLOT_PATH)
             lowest_price = Image.open(LOWEST_PRICE_PATH)
+            battery_level_plot = Image.open(BATTERY_LEVEL_PATH)
             # Paste the images onto the dashboard
             dashboard_image.paste(
                 circular_gauge, CIRCULAR_GAUGE_POS, circular_gauge
             )  # The circular gauge
             dashboard_image.paste(lowest_price, LOWEST_PRICE_POS)  # The lowest price
             dashboard_image.paste(bar_plot, BARPLOT_POS)  # The bar plot
-
+            dashboard_image.paste(
+                battery_level_plot, BATTERY_LEVEL_POS
+            )  # The battery level indicator
             # Save the final dashboard image
             dashboard_path = self.get_image_path()
             dashboard_image.save(dashboard_path)
@@ -245,7 +293,7 @@ class SimpleDashboardBuilder:
             )
             return bmp_path
 
-        return create_dashboard(df)
+        return create_dashboard(data)
 
     def build_legacy_dashboard(self, tibber_df: pd.DataFrame) -> str:
         print("Building simple dashboard")
