@@ -151,7 +151,7 @@ class SimpleDashboardBuilder:
             )
             plt.close(fig)
 
-        def create_battery_level_indicator(battery_level):
+        def create_battery_level_indicator(battery_level, hour_of_update):
             fig, ax = plt.subplots(
                 figsize=CIRCLE_FIGSIZE, subplot_kw={"aspect": "equal"}
             )
@@ -163,7 +163,7 @@ class SimpleDashboardBuilder:
             ax.text(
                 0.5,
                 0.65,
-                f"{datetime.now().hour}h",
+                f"{hour_of_update}h",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=TIME_FONTSIZE,
@@ -176,7 +176,7 @@ class SimpleDashboardBuilder:
                 f"EV: {battery_level:.0f}%",
                 horizontalalignment="center",
                 verticalalignment="center",
-                fontsize=25,
+                fontsize=23,
                 color="black",
             )
 
@@ -250,6 +250,9 @@ class SimpleDashboardBuilder:
         def create_dashboard(data: dict):
             df = data["tibber_data"]
             battery_level = data["battery_level"]
+            hour_of_update = datetime.strptime(
+                battery_level["timestamp"], "%Y-%m-%d %H:%M:%S"
+            ).hour
             # Get the last value for the circular gauge
             current_hour = datetime.now().hour
             current_day = datetime.now().day
@@ -261,7 +264,9 @@ class SimpleDashboardBuilder:
             # Create the images
             create_circular_gauge(df)
             create_lowest_price_indicator(df)
-            create_battery_level_indicator(battery_level)
+            create_battery_level_indicator(
+                battery_level["battery_level"], hour_of_update
+            )
             create_bar_plot(df)
 
             # Combine the images using Pillow

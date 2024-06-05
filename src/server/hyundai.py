@@ -19,8 +19,12 @@ class HyundaiClient:
             response = requests.get(URL + "/car_state")
             if response.status_code == 200:
                 response = response.json()
-                self.save_cache(response)
-                return response
+                cache = {
+                    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "data": response,
+                }
+                self.save_cache(cache)
+                return cache
             else:
                 ValueError(f"Could not get car state: {response.status_code}")
 
@@ -30,7 +34,10 @@ class HyundaiClient:
         if car_state is None:
             raise ValueError("Could not get car state")
 
-        return car_state["evStatus"]["batteryStatus"]
+        return {
+            "battery_level": car_state["data"]["evStatus"]["batteryStatus"],
+            "timestamp": car_state["timestamp"],
+        }
 
     @property
     def cache(self):
@@ -38,7 +45,7 @@ class HyundaiClient:
         try:
             with open("data/car_state.json", "r") as f:
                 cache = json.load(f)
-                return cache["data"]
+                return cache
         except FileNotFoundError:
             return None
 
@@ -54,16 +61,19 @@ class HyundaiClient:
         if self.cache is None:
             return False
         else:
-            cache_time = self.cache["timestamp"]
+            cache_time_string = self.cache["timestamp"]
+            cache_time = datetime.datetime.strptime(
+                cache_time_string, "%Y-%m-%d %H:%M:%S"
+            )
             if now.day == cache_time.day:
-                if past_cache_times[-1] == cache_time.hour:
+                if past_cache_times[-1] <= cache_time.hour:
                     return True
             elif now.day == cache_time.day + 1:
-                if past_cache_times[-1] == cache_time.hour:
+                if CACHE_TIMES[-1] <= cache_time.hour:
                     return True
         return False
 
     @staticmethod
     def save_cache(response):
         with open("data/car_state.json", "w") as f:
-            json.dump({"timestamp": datetime.datetime.now(), "data": response}, f)
+            json.dump(response, f)
