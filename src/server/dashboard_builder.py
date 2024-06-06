@@ -173,7 +173,7 @@ class SimpleDashboardBuilder:
             ax.text(
                 0.5,
                 0.4,
-                f"EV: {battery_level:.0f}%",
+                f"EV: {battery_level}%",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=23,
