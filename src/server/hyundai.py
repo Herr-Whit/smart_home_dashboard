@@ -75,7 +75,7 @@ class HyundaiClient:
                 if past_cache_times[-1] <= cache_time.hour:
                     return True
             elif now.day == cache_time.day + 1:
-                if CACHE_TIMES[-1] <= cache_time.hour:
+                if CACHE_TIMES[-1] <= cache_time.hour and len(past_cache_times) == 0:
                     return True
         return False
 
