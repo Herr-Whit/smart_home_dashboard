@@ -59,7 +59,7 @@ def get_timing_info():
 
 
 def connect_to_wifi():
-    with open("credentials.json", "r") as f:
+    with open("tibber_credentials.json", "r") as f:
         credentials = json.load(f)
 
     sta_if = network.WLAN(network.STA_IF)

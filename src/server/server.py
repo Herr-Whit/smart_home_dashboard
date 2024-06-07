@@ -13,6 +13,7 @@ from src.server.dashboard_builder import SimpleDashboardBuilder
 from src.server.hyundai import HyundaiClient
 from src.server.tibber import TibberClient
 from src.server.helpers import calculate_update_time
+from src.server.trash_collection import GoogleCalendarClient
 
 app = FastAPI()
 tibber_client = TibberClient()
@@ -24,8 +25,9 @@ builder = SimpleDashboardBuilder()
 def create_dashboard():
     tibber_data = tibber_client.get_price()
     hyundai_data = hyundai_client.get_battery_level()
+    trash_collection_data = GoogleCalendarClient().get_next_trash_collection()
     file = builder.build_dashboard(
-        {"tibber_data": tibber_data, "battery_level": hyundai_data}
+        {"tibber_data": tibber_data, "battery_level": hyundai_data, "trash_collection": trash_collection_data}
     )
     return FileResponse(file, media_type="image/bmp")
 

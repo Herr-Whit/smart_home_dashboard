@@ -1,7 +1,8 @@
 # Data
 data/*
 # Secrets
-credentials.json
+credentials/*
+*.pickle
 
 # Images
 img/

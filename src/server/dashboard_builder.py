@@ -8,7 +8,8 @@ from matplotlib.patches import Arc, Circle
 from PIL import Image, ImageDraw
 
 from src.server.helpers import png_to_bmp
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 IMG_DIR = os.path.join(os.getcwd(), "img")
 if not os.path.exists(IMG_DIR):
@@ -27,6 +28,11 @@ BARPLOT_POS = (240, 20)
 LOWEST_PRICE_POS = (50, 250)
 CIRCULAR_GAUGE_POS = (50, 50)
 BATTERY_LEVEL_POS = (50, 450)
+TC_Y_POS = 580
+TC_X_POS = 300
+TC_DISTANCE = 200
+TRASH_COLLECTION_POS = [(TC_X_POS, TC_Y_POS), (TC_X_POS + TC_DISTANCE, TC_Y_POS), (TC_X_POS + TC_DISTANCE * 2, TC_Y_POS),
+                        (TC_X_POS + TC_DISTANCE * 3, TC_Y_POS)]
 
 # Figure sizes
 BAR_FIGSIZE = (11, 6)
@@ -246,6 +252,63 @@ class SimpleDashboardBuilder:
             fig.savefig(BAR_PLOT_PATH, bbox_inches="tight", format="png")
             plt.close(fig)
 
+        def create_trash_collection_indicator(data: dict):
+            """
+            creates a circular indicator with the number of days until the next collection in normal font, indicates
+            "tomorrow" if the collection is in 1 day time or "today" if it's in 0 days with bold and underlined font.
+            :param data: like so {'papiermüll': '2024-06-18', 'biomüll': '2024-06-18', 'gelbe': '2024-06-18', 'restmüll': '2024-06-24'}
+            :return:
+            """
+            today = datetime.today().date()
+            for key, value in data.items():
+                collection_date = datetime.strptime(value, "%Y-%m-%d").date()
+                is_today = today == collection_date
+                is_tomorrow = today + timedelta(days=1) == collection_date
+                if is_today:
+                    info_text = "today"
+                elif is_tomorrow:
+                    info_text = "tomorrow"
+                else:
+                    info_text = f"{(collection_date - today).days} Tage"
+
+                # Create the circular gauge
+                factor = 0.6
+                fig, ax = plt.subplots(
+                    figsize=(CIRCLE_FIGSIZE[0]* factor, CIRCLE_FIGSIZE[1]* factor), subplot_kw={"aspect": "equal"}
+                )
+                ax.axis("off")
+                ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
+                ax.text(
+                    0.5,
+                    1,
+                    key,
+                    horizontalalignment="center",
+                    verticalalignment="center",
+                    fontsize=TIME_FONTSIZE * 0.75,
+                    color="black",
+                    fontweight="bold" if is_today or is_tomorrow else None,
+                    # underline=is_today or is_tomorrow,
+                )
+                ax.text(
+                    0.5,
+                    0.5,
+                    info_text,
+                    horizontalalignment="center",
+                    verticalalignment="center",
+                    fontsize=TIME_FONTSIZE * 0.75,
+                    color="black",
+                    fontweight="bold" if is_today or is_tomorrow else None,
+                    # underline=is_today or is_tomorrow,
+                )
+
+                # Save the circular gauge as an image
+                fig.savefig(
+                    os.path.join(IMG_DIR, f"{key}.png"),
+                    bbox_inches="tight",
+                    pad_inches=0,
+                    transparent=True,
+                )
+                plt.close(fig)
         # Function to create the dashboard
         def create_dashboard(data: dict):
             df = data["tibber_data"]
@@ -268,6 +331,7 @@ class SimpleDashboardBuilder:
                 battery_level["battery_level"], hour_of_update
             )
             create_bar_plot(df)
+            create_trash_collection_indicator(data["trash_collection"])
 
             # Combine the images using Pillow
             dashboard_image = Image.new(
@@ -280,6 +344,12 @@ class SimpleDashboardBuilder:
             bar_plot = Image.open(BAR_PLOT_PATH)
             lowest_price = Image.open(LOWEST_PRICE_PATH)
             battery_level_plot = Image.open(BATTERY_LEVEL_PATH)
+            trash_plots = []
+            for i, trash_type in enumerate(data["trash_collection"].keys()):
+                trash_collection = Image.open(
+                    os.path.join(IMG_DIR, f"{trash_type}.png")
+                )
+                dashboard_image.paste(trash_collection, TRASH_COLLECTION_POS[i])
             # Paste the images onto the dashboard
             dashboard_image.paste(
                 circular_gauge, CIRCULAR_GAUGE_POS, circular_gauge
