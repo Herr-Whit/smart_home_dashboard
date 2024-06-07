@@ -12,6 +12,8 @@ from google.auth.transport.requests import Request
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 CREDENTIALS_FILE = "credentials/google_credentials.json"
 CONFIG_FILE = "credentials/calendar_config.json"
+with open(CREDENTIALS_FILE, "r") as f:
+    CREDENTIALS = json.load(f)
 with open(CONFIG_FILE, "r") as f:
     CONFIG = json.load(f)
 
@@ -38,8 +40,8 @@ class GoogleCalendarClient:
         return creds
 
     def get_next_trash_collection(self):
-        creds = self.authenticate_google_calendar()
-        service = build("calendar", "v3", credentials=creds)
+        # creds = self.authenticate_google_calendar()
+        service = build("calendar", "v3", developerKey=CREDENTIALS["API_KEY"])
 
         now = datetime.datetime.utcnow().isoformat() + "Z"
         events_result = (
