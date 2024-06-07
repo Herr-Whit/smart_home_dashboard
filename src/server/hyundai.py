@@ -45,6 +45,7 @@ class HyundaiClient:
                 "battery_level": "??",
                 "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             }
+
     @property
     def cache(self):
         # Check if data/car_state.json exists

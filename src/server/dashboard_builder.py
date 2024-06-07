@@ -31,8 +31,12 @@ BATTERY_LEVEL_POS = (50, 450)
 TC_Y_POS = 580
 TC_X_POS = 300
 TC_DISTANCE = 200
-TRASH_COLLECTION_POS = [(TC_X_POS, TC_Y_POS), (TC_X_POS + TC_DISTANCE, TC_Y_POS), (TC_X_POS + TC_DISTANCE * 2, TC_Y_POS),
-                        (TC_X_POS + TC_DISTANCE * 3, TC_Y_POS)]
+TRASH_COLLECTION_POS = [
+    (TC_X_POS, TC_Y_POS),
+    (TC_X_POS + TC_DISTANCE, TC_Y_POS),
+    (TC_X_POS + TC_DISTANCE * 2, TC_Y_POS),
+    (TC_X_POS + TC_DISTANCE * 3, TC_Y_POS),
+]
 
 # Figure sizes
 BAR_FIGSIZE = (11, 6)
@@ -274,7 +278,8 @@ class SimpleDashboardBuilder:
                 # Create the circular gauge
                 factor = 0.6
                 fig, ax = plt.subplots(
-                    figsize=(CIRCLE_FIGSIZE[0]* factor, CIRCLE_FIGSIZE[1]* factor), subplot_kw={"aspect": "equal"}
+                    figsize=(CIRCLE_FIGSIZE[0] * factor, CIRCLE_FIGSIZE[1] * factor),
+                    subplot_kw={"aspect": "equal"},
                 )
                 ax.axis("off")
                 ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
@@ -309,6 +314,7 @@ class SimpleDashboardBuilder:
                     transparent=True,
                 )
                 plt.close(fig)
+
         # Function to create the dashboard
         def create_dashboard(data: dict):
             df = data["tibber_data"]
