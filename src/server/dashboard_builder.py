@@ -286,7 +286,13 @@ class SimpleDashboardBuilder:
                     ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="black"))
                 else:
                     ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="lightgray"))
-                ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="black" if is_today or is_tomorrow else CIRCLE_COLOR))
+                ax.add_patch(
+                    Circle(
+                        (0.5, 0.5),
+                        CIRCLE_RADIUS,
+                        color="black" if is_today or is_tomorrow else CIRCLE_COLOR,
+                    )
+                )
                 ax.text(
                     0.5,
                     1,
@@ -304,7 +310,7 @@ class SimpleDashboardBuilder:
                     horizontalalignment="center",
                     verticalalignment="center",
                     fontsize=TIME_FONTSIZE * 0.75,
-                    color='white' if is_today or is_tomorrow else "black",
+                    color="white" if is_today or is_tomorrow else "black",
                     fontweight="bold" if is_today or is_tomorrow else None,
                     # underline=is_today or is_tomorrow,
                 )
