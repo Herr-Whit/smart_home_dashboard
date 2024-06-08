@@ -269,9 +269,9 @@ class SimpleDashboardBuilder:
                 is_today = today == collection_date
                 is_tomorrow = today + timedelta(days=1) == collection_date
                 if is_today:
-                    info_text = "today"
+                    info_text = "heute"
                 elif is_tomorrow:
-                    info_text = "tomorrow"
+                    info_text = "morgen"
                 else:
                     info_text = f"{(collection_date - today).days} Tage"
 
@@ -282,7 +282,11 @@ class SimpleDashboardBuilder:
                     subplot_kw={"aspect": "equal"},
                 )
                 ax.axis("off")
-                ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color=CIRCLE_COLOR))
+                if is_today or is_tomorrow:
+                    ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="black"))
+                else:
+                    ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="lightgray"))
+                ax.add_patch(Circle((0.5, 0.5), CIRCLE_RADIUS, color="black" if is_today or is_tomorrow else CIRCLE_COLOR))
                 ax.text(
                     0.5,
                     1,
@@ -291,7 +295,6 @@ class SimpleDashboardBuilder:
                     verticalalignment="center",
                     fontsize=TIME_FONTSIZE * 0.75,
                     color="black",
-                    fontweight="bold" if is_today or is_tomorrow else None,
                     # underline=is_today or is_tomorrow,
                 )
                 ax.text(
@@ -301,7 +304,7 @@ class SimpleDashboardBuilder:
                     horizontalalignment="center",
                     verticalalignment="center",
                     fontsize=TIME_FONTSIZE * 0.75,
-                    color="black",
+                    color='white' if is_today or is_tomorrow else "black",
                     fontweight="bold" if is_today or is_tomorrow else None,
                     # underline=is_today or is_tomorrow,
                 )
