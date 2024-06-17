@@ -4,6 +4,9 @@ data/*
 credentials/*
 *.pickle
 
+!credentials/google_credentials.json.sample
+!credentials/tibber_credentials.json.sample
+!credentials/calendar_config.json.sample
 # Images
 img/
 *.png
