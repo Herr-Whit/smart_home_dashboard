@@ -1,7 +1,8 @@
 # Smart Home Dashboard
 ![IMG_0795.jpg](res/IMG_0795.jpg)
-This project involved building a smart home dashboard displaying dynamic energy prices, EV charge stage, as well as the 
-next trash collection for various bins (that last one might not be that smart, but at least as  useful).
+This project involved building a smart home dashboard displaying dynamic energy prices (current, lowest and next two 
+days), EV charge stage, as well as the next trash collection for various bins (that last one might not be that smart, 
+but at least as  useful).
 
 # Physical Setup
 ## Material
