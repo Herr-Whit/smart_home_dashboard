@@ -42,3 +42,5 @@ python -m src.server.server
 Just switch on the display, it will request the dashboard from the server after startup. If the server is not reachable 
 the display will print a small error message and idle. Otherwise it will print the dashboad for ~5min and then sleep as 
 instructed by the server.
+
+There is an additional component to this application to retrieve the EV state of charge. I'm not making that part public for security reasons.
