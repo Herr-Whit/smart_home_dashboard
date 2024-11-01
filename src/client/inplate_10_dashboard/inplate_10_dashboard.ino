@@ -47,9 +47,12 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("Starting Loop!");
   display.clearDisplay();
   display.drawBitmapFromWeb("http://192.168.178.42:8000/dashboard/", 0, 0);
   display.display();
-  int sleep_duration = getTimingInfo() * 1000;
+  Serial.println("Displayed dashboard!");
+  int sleep_duration = getTimingInfo();
+  Serial.printf("sleeping for %d ms...\n", sleep_duration);
   delay(sleep_duration);
 }
