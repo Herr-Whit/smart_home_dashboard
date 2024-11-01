@@ -3,7 +3,7 @@ data/*
 # Secrets
 credentials/*
 *.pickle
-
+*secrets.h
 !credentials/google_credentials.json.sample
 !credentials/tibber_credentials.json.sample
 !credentials/calendar_config.json.sample
