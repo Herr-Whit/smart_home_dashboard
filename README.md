@@ -31,8 +31,13 @@ Please enter your preferred python environment manager and just run
 pip -r requirements.txt
 ```
 ## Display
-Please refer to https://github.com/SolderedElectronics/Inkplate-micropython to set up micropython. Then push the 
-contents of `src/client` to the internal storage.
+Add a `secrets.h` file to the [client arduino project](src/client/inkplate_10_dashboard) with the content
+```c
+// secrets.h
+const char* ssid = "WLAN_SSID";
+const char* pass = "PASSWORD";
+```
+and upload the folder to the Inkplate10 using ArduinoIDE for example.
 
 # Running the setup
 Run the FastAPI server on the pi:
