@@ -423,6 +423,6 @@ class SimpleDashboardBuilder:
     def get_image_path():
         # Save the plot as an image
 
-        img_name = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_tibber_plot.png"
+        img_name = f"{datetime.now().strftime('%Y-%m-%d')}_tibber_plot.png"
         img_path = os.path.join(IMG_DIR, img_name)
         return img_path
