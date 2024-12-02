@@ -23,6 +23,7 @@ builder = SimpleDashboardBuilder()
 
 @app.get("/dashboard/")
 def create_dashboard():
+    print(f"{datetime.now()}: create dashboard")
     tibber_data = tibber_client.get_price()
     hyundai_data = hyundai_client.get_battery_level()
     trash_collection_data = GoogleCalendarClient().get_next_trash_collection()
@@ -43,6 +44,7 @@ def get_timing_info():
     prices for the next day at 13:00.
     :return: object with target time and sleep duration in seconds
     """
+    print(f"{datetime.now()}: get timing info")
     if sleep_time:
         update_time = {
             "target_time": datetime.now() + timedelta(seconds=sleep_time),
@@ -54,9 +56,11 @@ def get_timing_info():
     return update_time
 
 
+# set default sleep time
+sleep_time = None
+
 if __name__ == "__main__":
     # retrieve kwarg sleep time from command line if applicable
-    sleep_time = None
     parser = argparse.ArgumentParser()
     parser.add_argument("--sleep_time", type=int)
     args = parser.parse_args()
