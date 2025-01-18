@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from src.server.dashboard_builder import SimpleDashboardBuilder
 from src.server.hyundai import HyundaiClient
 from src.server.tibber import TibberClient
@@ -19,22 +19,28 @@ app = FastAPI()
 tibber_client = TibberClient()
 hyundai_client = HyundaiClient()
 builder = SimpleDashboardBuilder()
+dashboard_file = {'path': ''}
 
 
-@app.get("/dashboard/")
+@app.post("/dashboard/")
 def create_dashboard():
     print(f"{datetime.now()}: create dashboard")
     tibber_data = tibber_client.get_price()
     hyundai_data = hyundai_client.get_battery_level()
     trash_collection_data = GoogleCalendarClient().get_next_trash_collection()
-    file = builder.build_dashboard(
+    dashboard_file['path'] = builder.build_dashboard(
         {
             "tibber_data": tibber_data,
             "battery_level": hyundai_data,
             "trash_collection": trash_collection_data,
         }
     )
-    return FileResponse(file, media_type="image/bmp")
+    return HTMLResponse()
+
+
+@app.get("/dashboard/")
+def create_dashboard():
+    return FileResponse(dashboard_file['path'], media_type="image/bmp")
 
 
 @app.get("/timing/")
