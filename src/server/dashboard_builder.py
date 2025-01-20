@@ -361,10 +361,11 @@ class SimpleDashboardBuilder:
             battery_level_plot = Image.open(BATTERY_LEVEL_PATH)
             trash_plots = []
             for i, trash_type in enumerate(data["trash_collection"].keys()):
-                trash_collection = Image.open(
-                    os.path.join(IMG_DIR, f"{trash_type}.png")
-                )
-                dashboard_image.paste(trash_collection, TRASH_COLLECTION_POS[i])
+                if i < len(TRASH_COLLECTION_POS):
+                    trash_collection = Image.open(
+                        os.path.join(IMG_DIR, f"{trash_type}.png")
+                    )
+                    dashboard_image.paste(trash_collection, TRASH_COLLECTION_POS[i])
             # Paste the images onto the dashboard
             dashboard_image.paste(
                 circular_gauge, CIRCULAR_GAUGE_POS, circular_gauge
