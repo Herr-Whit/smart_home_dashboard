@@ -48,8 +48,19 @@ void setup() {
 
 void loop() {
   Serial.println("Starting Loop!");
+  Serial.printf("Free heap: %d bytes\n", ESP.getFreeHeap());
+
+  HTTPClient http;
+  http.begin("http://192.168.178.42:8000/dashboard/");
+  int httpResponseCode = http.POST("");
+  Serial.println("Triggered dashboard construction!");
+  delay(30000);
+
   display.clearDisplay();
+  Serial.println("Cleared Display!");
+
   display.drawBitmapFromWeb("http://192.168.178.42:8000/dashboard/", 0, 0);
+  Serial.println("drew bitmap!");
   display.display();
   Serial.println("Displayed dashboard!");
   int sleep_duration = getTimingInfo();
