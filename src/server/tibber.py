@@ -27,7 +27,7 @@ class TibberClient:
     def wrangle_tibber_data(data: dict) -> pd.DataFrame:
         next_two_days = data["today"] + data["tomorrow"]
         df = pd.DataFrame(next_two_days)
-        df["startsAt"] = pd.to_datetime(df["startsAt"])
+        df["startsAt"] = pd.to_datetime(df["startsAt"].str.slice(0, 19))
         df["hour"] = df["startsAt"].dt.hour
         df["day"] = df["startsAt"].dt.day
         df["Zeit"] = df["day"].astype(str) + ". " + df["hour"].astype(str)
